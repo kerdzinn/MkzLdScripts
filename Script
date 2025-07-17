@@ -1,9 +1,6 @@
 -- Aguarda o jogo carregar completamente
 repeat task.wait() until game:IsLoaded()
 
--- Desativa toda a UI padrão do Roblox
-game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, false)
-
 -- Serviços
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -155,9 +152,6 @@ task.spawn(function()
 	end
 
 	gui:Destroy()
-
--- Ativa a UI padrão de volta
-game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
 
 	-- Executa o script externo direto
 	pcall(function()
