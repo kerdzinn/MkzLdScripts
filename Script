@@ -5,19 +5,6 @@ repeat task.wait() until game:IsLoaded()
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-local ContextActionService = game:GetService("ContextActionService")
-
--- Bloqueia ESC no teclado
-local function blockEsc(_, inputState)
-	if inputState == Enum.UserInputState.Begin then
-		return Enum.ContextActionResult.Sink
-	end
-end
-ContextActionService:BindAction("BlockEscape", blockEsc, false, Enum.KeyCode.Escape)
-
--- Bloqueia todos os toques e cliques (mobile e PC)
-UserInputService.ModalEnabled = true
 
 -- GUI principal
 local gui = Instance.new("ScreenGui")
@@ -163,10 +150,6 @@ task.spawn(function()
 
 		task.wait(waitTime)
 	end
-
-	-- Libera controles e remove proteção
-	UserInputService.ModalEnabled = false
-	ContextActionService:UnbindAction("BlockEscape")
 
 	gui:Destroy()
 
