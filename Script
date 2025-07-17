@@ -3,7 +3,6 @@ repeat task.wait() until game:IsLoaded()
 -- Serviços
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 
 -- GUI principal
@@ -13,14 +12,14 @@ gui.DisplayOrder = 1000
 gui.ResetOnSpawn = false
 gui.Name = "MkzLoadingScreen"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = CoreGui
+gui.Parent = player:WaitForChild("PlayerGui")
 
 -- Fundo com textura e gradiente preto e branco
 local bgFrame = Instance.new("Frame")
 bgFrame.Size = UDim2.new(1, 0, 1, 0)
-bgFrame.Position = UDim2.new(0, 0, 0, 0)
-bgFrame.BorderSizePixel = 0
 bgFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+bgFrame.BorderSizePixel = 0
+bgFrame.Position = UDim2.new(0, 0, 0, 0)
 bgFrame.ZIndex = 0
 bgFrame.Parent = gui
 
@@ -33,14 +32,14 @@ gradient.Color = ColorSequence.new({
 gradient.Rotation = 45
 gradient.Parent = bgFrame
 
--- Textura topográfica sutil
+-- Textura topográfica
 local textureOverlay = Instance.new("ImageLabel")
 textureOverlay.Size = UDim2.new(1, 0, 1, 0)
 textureOverlay.Position = UDim2.new(0, 0, 0, 0)
 textureOverlay.BackgroundTransparency = 1
 textureOverlay.ImageTransparency = 0.85
 textureOverlay.ImageColor3 = Color3.fromRGB(255, 255, 255)
-textureOverlay.Image = "rbxassetid://11394676928" -- topographic lines
+textureOverlay.Image = "rbxassetid://11394676928" -- textura topográfica
 textureOverlay.ScaleType = Enum.ScaleType.Tile
 textureOverlay.TileSize = UDim2.new(0.1, 0, 0.1, 0)
 textureOverlay.ZIndex = 1
@@ -164,7 +163,7 @@ task.spawn(function()
 		task.wait(waitTime)
 	end
 
-	-- Fade de tudo (incluindo textura, barra e textos)
+	-- Fade de tudo no final (incluindo imagem e barra)
 	for _, obj in pairs(gui:GetDescendants()) do
 		if obj:IsA("TextLabel") or obj:IsA("Frame") or obj:IsA("ImageLabel") then
 			pcall(function()
