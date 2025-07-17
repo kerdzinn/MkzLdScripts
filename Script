@@ -1,131 +1,157 @@
+-- Aguarda o jogo carregar completamente
+repeat task.wait() until game:IsLoaded()
+
+-- Serviços
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-
+local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
 
--- Remover UI antiga, se existir
-local oldUI = playerGui:FindFirstChild("LoadingScreen")
-if oldUI then oldUI:Destroy() end
+-- GUI principal
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.DisplayOrder = 1000
+gui.ResetOnSpawn = false
+gui.Name = "MkzLoadingScreen"
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = CoreGui
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "LoadingScreen"
-screenGui.IgnoreGuiInset = true
-screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-screenGui.Parent = playerGui
+-- Fundo animado com gradiente
+local bgFrame = Instance.new("Frame")
+bgFrame.Size = UDim2.new(1, 0, 1, 0)
+bgFrame.Position = UDim2.new(0, 0, 0, 0)
+bgFrame.BorderSizePixel = 0
+bgFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+bgFrame.ZIndex = 0
+bgFrame.Parent = gui
 
--- Fundo com gradiente animado
-local bg = Instance.new("Frame")
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-bg.Parent = screenGui
-
-local uiGradient = Instance.new("UIGradient", bg)
-uiGradient.Color = ColorSequence.new{
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
 	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
-}
-uiGradient.Rotation = 0
+})
+gradient.Rotation = 0
+gradient.Parent = bgFrame
 
--- Gradiente se movendo
+-- Animação suave no gradiente
 task.spawn(function()
-	while screenGui do
-		uiGradient.Rotation += 0.2
-		task.wait(0.01)
+	while gui do
+		for i = 0, 360, 1 do
+			gradient.Rotation = i
+			task.wait(0.02)
+		end
 	end
 end)
 
+-- Frame principal
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.Position = UDim2.new(0, 0, 0, 0)
+frame.BackgroundTransparency = 1
+frame.ZIndex = 10
+frame.Parent = gui
+
 -- Título
 local title = Instance.new("TextLabel")
-title.Text = "Mkz Scripts"
-title.Font = Enum.Font.GothamBlack
-title.TextSize = 60
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.AnchorPoint = Vector2.new(0.5, 0)
+title.Size = UDim2.new(0.6, 0, 0, 80)
 title.Position = UDim2.new(0.5, 0, 0.3, 0)
-title.Size = UDim2.new(0.8, 0, 0.1, 0)
+title.AnchorPoint = Vector2.new(0.5, 0.5)
 title.BackgroundTransparency = 1
-title.Parent = bg
+title.Text = "Mkz Scripts"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.ZIndex = 11
+title.Parent = frame
 
 -- Avisos
-local warnings = {
-	"Please wait, script is loading...",
-	"Leaving now may cause pet loss or ban"
+local messageLabel = Instance.new("TextLabel")
+messageLabel.Size = UDim2.new(0.5, 0, 0, 20)
+messageLabel.Position = UDim2.new(0.5, 0, 0.5, 10)
+messageLabel.AnchorPoint = Vector2.new(0.5, 0)
+messageLabel.BackgroundTransparency = 1
+messageLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+messageLabel.TextScaled = true
+messageLabel.Font = Enum.Font.GothamBold
+messageLabel.Text = "Loading..."
+messageLabel.ZIndex = 11
+messageLabel.Parent = frame
+
+local messages = {
+	"Loading...",
+	"Don't leave!",
+	"Visit Mkz Shop!",
+	"Grow your seeds!",
+	"Almost done!",
+	"Thanks!"
 }
+local msgIndex = 1
 
-local warningLabel = Instance.new("TextLabel")
-warningLabel.Text = warnings[1]
-warningLabel.Font = Enum.Font.GothamMedium
-warningLabel.TextSize = 24
-warningLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
-warningLabel.AnchorPoint = Vector2.new(0.5, 0)
-warningLabel.Position = UDim2.new(0.5, 0, 0.4, 0)
-warningLabel.Size = UDim2.new(0.8, 0, 0.05, 0)
-warningLabel.BackgroundTransparency = 1
-warningLabel.TextWrapped = true
-warningLabel.Parent = bg
-
--- Barra de carregamento
-local barBG = Instance.new("Frame")
-barBG.Position = UDim2.new(0.5, 0, 0.5, 0)
-barBG.AnchorPoint = Vector2.new(0.5, 0)
-barBG.Size = UDim2.new(0.6, 0, 0.05, 0)
-barBG.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-barBG.BorderSizePixel = 0
-barBG.ClipsDescendants = true
-barBG.Parent = bg
-
-local barCorner = Instance.new("UICorner")
-barCorner.CornerRadius = UDim.new(1, 0)
-barCorner.Parent = barBG
+-- Barra de progresso
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0.5, 0, 0, 24)
+progressBar.Position = UDim2.new(0.5, 0, 0.5, 40)
+progressBar.AnchorPoint = Vector2.new(0.5, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+progressBar.BorderSizePixel = 0
+progressBar.ZIndex = 11
+progressBar.Parent = frame
+Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 12)
 
 local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
-fill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
-fill.Parent = barBG
+fill.ZIndex = 12
+fill.Parent = progressBar
+Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 12)
 
-local fillCorner = Instance.new("UICorner")
-fillCorner.CornerRadius = UDim.new(1, 0)
-fillCorner.Parent = fill
+local percentText = Instance.new("TextLabel")
+percentText.Size = UDim2.new(0, 80, 0, 24)
+percentText.Position = UDim2.new(0.5, 0, 0.5, 72)
+percentText.AnchorPoint = Vector2.new(0.5, 0)
+percentText.BackgroundTransparency = 1
+percentText.Text = "0%"
+percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentText.TextScaled = true
+percentText.Font = Enum.Font.GothamBold
+percentText.ZIndex = 11
+percentText.Parent = frame
 
--- Porcentagem dentro da barra
-local percentLabel = Instance.new("TextLabel")
-percentLabel.Text = "0%"
-percentLabel.Font = Enum.Font.GothamBold
-percentLabel.TextSize = 20
-percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-percentLabel.BackgroundTransparency = 1
-percentLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-percentLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
-percentLabel.Size = UDim2.new(1, 0, 1, 0)
-percentLabel.ZIndex = 2
-percentLabel.Parent = barBG
-
--- Carregamento e avisos
-local duration = 110 -- segundos
-local currentPercent = 0
-local lastIndex = 1
-
-for i = 1, 100 do
-	currentPercent = i
-	local newSize = UDim2.new(i / 100, 0, 1, 0)
-	TweenService:Create(fill, TweenInfo.new(1.1, Enum.EasingStyle.Sine), {Size = newSize}):Play()
-	percentLabel.Text = i .. "%"
-
-	-- Trocar aviso a cada 10%
-	if i % 10 == 0 then
-		lastIndex = lastIndex == 1 and 2 or 1
-		TweenService:Create(warningLabel, TweenInfo.new(0.5), {Position = UDim2.new(1.5, 0, warningLabel.Position.Y.Scale, 0)}):Play()
-		task.wait(0.5)
-		warningLabel.Position = UDim2.new(-0.5, 0, warningLabel.Position.Y.Scale, 0)
-		warningLabel.Text = warnings[lastIndex]
-		TweenService:Create(warningLabel, TweenInfo.new(0.5), {Position = UDim2.new(0.5, 0, warningLabel.Position.Y.Scale, 0)}):Play()
-	end
-
-	task.wait(duration / 100)
+-- Alternar mensagens
+local function swapMessage()
+	msgIndex = msgIndex % #messages + 1
+	messageLabel.Text = messages[msgIndex]
 end
 
--- Remover tudo após carregar
-screenGui:Destroy()
+-- Animação de carregamento suave
+task.spawn(function()
+	local duration = 110
+	local steps = 300
+	local waitTime = duration / steps
+
+	for i = 1, steps do
+		local percent = i / steps
+		fill.Size = UDim2.new(percent, 0, 1, 0)
+		percentText.Text = tostring(math.floor(percent * 100)) .. "%"
+
+		if i % math.floor(steps / #messages) == 0 then
+			swapMessage()
+		end
+
+		task.wait(waitTime)
+	end
+
+	-- Fade out completo
+	for _, obj in pairs(gui:GetDescendants()) do
+		if obj:IsA("TextLabel") or obj:IsA("Frame") then
+			TweenService:Create(obj, TweenInfo.new(1), {
+				TextTransparency = 1,
+				BackgroundTransparency = 1
+			}):Play()
+		end
+	end
+
+	task.wait(1.2)
+	gui:Destroy()
+end)
