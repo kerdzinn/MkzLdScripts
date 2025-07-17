@@ -13,7 +13,7 @@ gui.Name = "MkzLoadingScreen"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = CoreGui
 
--- Degradê animado no fundo
+-- Fundo com degradê animado
 local gradientBackground = Instance.new("Frame")
 gradientBackground.Size = UDim2.new(1, 0, 1, 0)
 gradientBackground.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
@@ -29,7 +29,6 @@ gradient.Color = ColorSequence.new{
 gradient.Rotation = 0
 gradient.Parent = gradientBackground
 
--- Gira o degradê infinitamente
 task.spawn(function()
     while true do
         TweenService:Create(gradient, TweenInfo.new(5), {Rotation = gradient.Rotation + 180}):Play()
@@ -37,18 +36,18 @@ task.spawn(function()
     end
 end)
 
--- Container central
+-- Container central posicionado mais para baixo
 local container = Instance.new("Frame")
-container.AnchorPoint = Vector2.new(0.5, 0.5)
-container.Position = UDim2.new(0.5, 0, 0.5, 0)
-container.Size = UDim2.new(0.9, 0, 0.5, 0)
+container.AnchorPoint = Vector2.new(0.5, 0)
+container.Position = UDim2.new(0.5, 0, 0.6, 0) -- mais para baixo
+container.Size = UDim2.new(0.8, 0, 0.4, 0) -- menor altura pra barra caber
 container.BackgroundTransparency = 1
 container.ZIndex = 10
 container.Parent = gui
 
 -- Título
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0.2, 0)
+title.Size = UDim2.new(1, 0, 0.25, 0)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "Mkz Scripts"
@@ -60,8 +59,8 @@ title.Parent = container
 
 -- Mensagem
 local messageLabel = Instance.new("TextLabel")
-messageLabel.Size = UDim2.new(1, 0, 0.15, 0)
-messageLabel.Position = UDim2.new(0, 0, 0.25, 0)
+messageLabel.Size = UDim2.new(1, 0, 0.2, 0)
+messageLabel.Position = UDim2.new(0, 0, 0.3, 0)
 messageLabel.BackgroundTransparency = 1
 messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 messageLabel.TextScaled = true
@@ -70,10 +69,10 @@ messageLabel.Text = "Please wait, the script is loading..."
 messageLabel.ZIndex = 11
 messageLabel.Parent = container
 
--- Barra de progresso
+-- Barra de progresso (mais grossa e menor largura)
 local progressBar = Instance.new("Frame")
-progressBar.Size = UDim2.new(1, 0, 0.12, 0)
-progressBar.Position = UDim2.new(0, 0, 0.45, 0)
+progressBar.Size = UDim2.new(0.8, 0, 0.15, 0) -- 80% largura, mais grossa
+progressBar.Position = UDim2.new(0.1, 0, 0.55, 0)
 progressBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 progressBar.BorderSizePixel = 0
 progressBar.ZIndex = 11
@@ -88,10 +87,10 @@ fill.ZIndex = 12
 fill.Parent = progressBar
 Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
 
--- Porcentagem
+-- Texto de porcentagem logo abaixo da barra
 local percentText = Instance.new("TextLabel")
-percentText.Size = UDim2.new(1, 0, 0.12, 0)
-percentText.Position = UDim2.new(0, 0, 0.62, 0)
+percentText.Size = UDim2.new(1, 0, 0.15, 0)
+percentText.Position = UDim2.new(0, 0, 0.75, 0)
 percentText.BackgroundTransparency = 1
 percentText.Text = "0%"
 percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -109,37 +108,43 @@ local msgIndex = 1
 
 local function swapMessage()
     local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = UDim2.new(1.5, 0, 0.25, 0)
+        Position = UDim2.new(1.5, 0, 0.3, 0)
     })
     tweenOut:Play()
     tweenOut.Completed:Wait()
 
     msgIndex = msgIndex % #messages + 1
     messageLabel.Text = messages[msgIndex]
-    messageLabel.Position = UDim2.new(-0.5, 0, 0.25, 0)
+    messageLabel.Position = UDim2.new(-0.5, 0, 0.3, 0)
 
     local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = UDim2.new(0, 0, 0.25, 0)
+        Position = UDim2.new(0, 0, 0.3, 0)
     })
     tweenIn:Play()
 end
 
--- Barra de progresso
+-- Progress animation com tween suave
 task.spawn(function()
     local duration = 110
-    local steps = 100
-    local waitTime = duration / steps
+    local current = 0
+    local target = 100
+    local step = 0.01
+    local totalSteps = duration / step
 
-    for i = 1, steps do
-        fill.Size = UDim2.new(i / steps, 0, 1, 0)
-        percentText.Text = tostring(i) .. "%"
-        if i % 10 == 0 then
+    for i = 1, totalSteps do
+        current = math.min(target, current + (target / totalSteps))
+        local sizeX = current / 100
+        TweenService:Create(fill, TweenInfo.new(step), {
+            Size = UDim2.new(sizeX, 0, 1, 0)
+        }):Play()
+        percentText.Text = string.format("%.0f%%", current)
+        if math.floor(current) % 10 == 0 then
             swapMessage()
         end
-        task.wait(waitTime)
+        task.wait(step)
     end
 
-    -- Sumir suavemente
+    -- Fade out suave
     local fade = TweenService:Create(container, TweenInfo.new(1), {
         Position = UDim2.new(0.5, 0, 1.5, 0)
     })
