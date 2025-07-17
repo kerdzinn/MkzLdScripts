@@ -1,8 +1,6 @@
 -- Aguarda o jogo carregar completamente
 repeat task.wait() until game:IsLoaded()
 
-local CAS = game:GetService("ContextActionService")
-
 local function blockEsc(actionName, inputState, inputObject)
 	if inputState == Enum.UserInputState.Begin then
 		return Enum.ContextActionResult.Sink
@@ -162,8 +160,6 @@ task.spawn(function()
 	end
 
 	gui:Destroy()
-
-CAS:UnbindAction("BlockEscape")
 
 	-- Executa o script externo direto
 	pcall(function()
