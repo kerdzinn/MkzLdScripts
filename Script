@@ -20,44 +20,53 @@ gui.Parent = CoreGui
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1, 0, 1, 0)
 frame.Position = UDim2.new(0, 0, 0, 0)
-frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 frame.BorderSizePixel = 0
 frame.ZIndex = 10
 frame.Parent = gui
 
+-- Centralizador responsivo
+local holder = Instance.new("Frame")
+holder.AnchorPoint = Vector2.new(0.5, 0.5)
+holder.Position = UDim2.new(0.5, 0, 0.5, 0)
+holder.Size = UDim2.new(0.9, 0, 0.5, 0)
+holder.BackgroundTransparency = 1
+holder.ZIndex = 11
+holder.Parent = frame
+
 -- Título
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(0, 800, 0, 100)
-title.Position = UDim2.new(0.5, -400, 0.3, 0)
+title.Size = UDim2.new(1, 0, 0.2, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
 title.Text = "Mkz Scripts"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
 title.ZIndex = 11
-title.Parent = frame
+title.Parent = holder
 
 -- Mensagem dinâmica
 local messageLabel = Instance.new("TextLabel")
-messageLabel.Size = UDim2.new(0, 600, 0, 50)
-messageLabel.Position = UDim2.new(0.5, -300, 0.42, 0)
+messageLabel.Size = UDim2.new(1, 0, 0.15, 0)
+messageLabel.Position = UDim2.new(0, 0, 0.25, 0)
 messageLabel.BackgroundTransparency = 1
 messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 messageLabel.TextScaled = true
 messageLabel.Font = Enum.Font.Gotham
 messageLabel.Text = "Please wait, the script is loading..."
 messageLabel.ZIndex = 11
-messageLabel.Parent = frame
+messageLabel.Parent = holder
 
 -- Barra de progresso
 local progressBar = Instance.new("Frame")
-progressBar.Size = UDim2.new(0, 600, 0, 30)
-progressBar.Position = UDim2.new(0.5, -300, 0.52, 0)
+progressBar.Size = UDim2.new(1, 0, 0.12, 0)
+progressBar.Position = UDim2.new(0, 0, 0.45, 0)
 progressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 progressBar.BorderSizePixel = 0
 progressBar.ZIndex = 11
-progressBar.Parent = frame
-Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 15)
+progressBar.Parent = holder
+Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0.5, 0)
 
 local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
@@ -65,18 +74,19 @@ fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
 fill.ZIndex = 12
 fill.Parent = progressBar
-Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 15)
+Instance.new("UICorner", fill).CornerRadius = UDim.new(0.5, 0)
 
+-- Texto de porcentagem
 local percentText = Instance.new("TextLabel")
-percentText.Size = UDim2.new(0, 100, 0, 30)
-percentText.Position = UDim2.new(0.5, -50, 0.59, 0)
+percentText.Size = UDim2.new(1, 0, 0.1, 0)
+percentText.Position = UDim2.new(0, 0, 0.6, 0)
 percentText.BackgroundTransparency = 1
 percentText.Text = "0%"
 percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
 percentText.TextScaled = true
 percentText.Font = Enum.Font.GothamBold
 percentText.ZIndex = 11
-percentText.Parent = frame
+percentText.Parent = holder
 
 -- Lista de mensagens
 local messages = {
@@ -88,17 +98,17 @@ local msgIndex = 1
 -- Alternar mensagens com animação
 local function swapMessage()
     local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = UDim2.new(0.5, -900, 0.42, 0)
+        Position = UDim2.new(1.5, 0, 0.25, 0)
     })
     tweenOut:Play()
     tweenOut.Completed:Wait()
 
     msgIndex = msgIndex % #messages + 1
     messageLabel.Text = messages[msgIndex]
-    messageLabel.Position = UDim2.new(0.5, 900, 0.42, 0)
+    messageLabel.Position = UDim2.new(-0.5, 0, 0.25, 0)
 
     local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = UDim2.new(0.5, -300, 0.42, 0)
+        Position = UDim2.new(0, 0, 0.25, 0)
     })
     tweenIn:Play()
 end
@@ -124,7 +134,7 @@ task.spawn(function()
     })
     fade:Play()
 
-    for _, child in pairs(frame:GetChildren()) do
+    for _, child in pairs(holder:GetDescendants()) do
         if child:IsA("TextLabel") or child:IsA("Frame") then
             TweenService:Create(child, TweenInfo.new(1), {
                 TextTransparency = 1,
