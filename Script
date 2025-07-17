@@ -1,10 +1,13 @@
+-- Aguarda o jogo carregar completamente
 repeat task.wait() until game:IsLoaded()
 
+-- Serviços
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
 
+-- GUI principal
 local gui = Instance.new("ScreenGui")
 gui.IgnoreGuiInset = true
 gui.DisplayOrder = 1000
@@ -13,41 +16,45 @@ gui.Name = "MkzLoadingScreen"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = CoreGui
 
--- Fundo com degradê animado
-local gradientFrame = Instance.new("Frame")
-gradientFrame.Size = UDim2.new(1, 0, 1, 0)
-gradientFrame.Position = UDim2.new(0, 0, 0, 0)
-gradientFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-gradientFrame.BorderSizePixel = 0
-gradientFrame.ZIndex = 0
-gradientFrame.Parent = gui
+-- Fundo animado com gradiente
+local bgFrame = Instance.new("Frame")
+bgFrame.Size = UDim2.new(1, 0, 1, 0)
+bgFrame.Position = UDim2.new(0, 0, 0, 0)
+bgFrame.BorderSizePixel = 0
+bgFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+bgFrame.ZIndex = 0
+bgFrame.Parent = gui
 
-local uiGradient = Instance.new("UIGradient")
-uiGradient.Color = ColorSequence.new{
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
 	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
-}
-uiGradient.Rotation = 0
-uiGradient.Parent = gradientFrame
+})
+gradient.Rotation = 0
+gradient.Parent = bgFrame
 
+-- Animação suave no gradiente
 task.spawn(function()
 	while gui do
-		uiGradient.Rotation = (uiGradient.Rotation + 0.1) % 360
-		task.wait(0.01)
+		for i = 0, 360, 1 do
+			gradient.Rotation = i
+			task.wait(0.02)
+		end
 	end
 end)
 
--- Container central
+-- Frame principal
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1, 0, 1, 0)
+frame.Position = UDim2.new(0, 0, 0, 0)
 frame.BackgroundTransparency = 1
 frame.ZIndex = 10
 frame.Parent = gui
 
--- Título (Mkz Scripts)
+-- Título
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(0.6, 0, 0, 60)
-title.Position = UDim2.new(0.5, 0, 0.5, -130)
+title.Size = UDim2.new(0.6, 0, 0, 80)
+title.Position = UDim2.new(0.5, 0, 0.3, 0)
 title.AnchorPoint = Vector2.new(0.5, 0.5)
 title.BackgroundTransparency = 1
 title.Text = "Mkz Scripts"
@@ -59,53 +66,37 @@ title.Parent = frame
 
 -- Avisos
 local messageLabel = Instance.new("TextLabel")
-messageLabel.Size = UDim2.new(0.6, 0, 0, 30)
-messageLabel.Position = UDim2.new(0.5, 0, 0.5, -40)
-messageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+messageLabel.Size = UDim2.new(0.5, 0, 0, 26)
+messageLabel.Position = UDim2.new(0.5, 0, 0.5, -5)
+messageLabel.AnchorPoint = Vector2.new(0.5, 1)
 messageLabel.BackgroundTransparency = 1
-messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+messageLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
 messageLabel.TextScaled = true
-messageLabel.Font = Enum.Font.Gotham
-messageLabel.Text = "Please wait, the script is loading..."
+messageLabel.Font = Enum.Font.GothamBold
+messageLabel.Text = "Loading script..."
 messageLabel.ZIndex = 11
 messageLabel.Parent = frame
 
 local messages = {
-	"Please wait, the script is loading...",
-	"Leaving the game now may delete your pets and get you banned",
-	"Visit our shop to get exclusive seeds!",
-	"Optimize your garden for better harvests!",
-	"Don't worry, the game is just preparing things!",
-	"Almost there! Just a bit more..."
+	"Loading script...",
+	"Don't leave now!",
+	"Buy seeds in our shop!",
+	"Upgrade your garden!",
+	"Hang tight...",
+	"Almost done!"
 }
 local msgIndex = 1
 
-local function swapMessage()
-	local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.3), {
-		TextTransparency = 1
-	})
-	tweenOut:Play()
-	tweenOut.Completed:Wait()
-
-	msgIndex = msgIndex % #messages + 1
-	messageLabel.Text = messages[msgIndex]
-
-	local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.3), {
-		TextTransparency = 0
-	})
-	tweenIn:Play()
-end
-
--- Barra de carregamento (menor)
+-- Barra de progresso
 local progressBar = Instance.new("Frame")
-progressBar.Size = UDim2.new(0.5, 0, 0, 28)
-progressBar.Position = UDim2.new(0.5, 0, 0.5, 10)
+progressBar.Size = UDim2.new(0.5, 0, 0, 24)
+progressBar.Position = UDim2.new(0.5, 0, 0.5, 20)
 progressBar.AnchorPoint = Vector2.new(0.5, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+progressBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 progressBar.BorderSizePixel = 0
 progressBar.ZIndex = 11
 progressBar.Parent = frame
-Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 12)
 
 local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
@@ -113,13 +104,12 @@ fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
 fill.ZIndex = 12
 fill.Parent = progressBar
-Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 12)
 
--- Porcentagem
 local percentText = Instance.new("TextLabel")
-percentText.Size = UDim2.new(0, 80, 0, 28)
-percentText.Position = UDim2.new(0.5, 0, 0.5, 50)
-percentText.AnchorPoint = Vector2.new(0.5, 0)
+percentText.Size = UDim2.new(0, 80, 0, 24)
+percentText.Position = UDim2.new(0.5, 0, 0.5, 55)
+percentText.AnchorPoint = Vector2.new(0.5, 0.5)
 percentText.BackgroundTransparency = 1
 percentText.Text = "0%"
 percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -128,38 +118,43 @@ percentText.Font = Enum.Font.GothamBold
 percentText.ZIndex = 11
 percentText.Parent = frame
 
--- Carregamento suave
+-- Alternar mensagens
+local function swapMessage()
+	msgIndex = msgIndex % #messages + 1
+	messageLabel.Text = messages[msgIndex]
+end
+
+-- Animação de carregamento suave
 task.spawn(function()
-	local totalTime = 110
-	local steps = 100
-	local timePerStep = totalTime / steps
+	local duration = 15
+	local steps = 300
+	local waitTime = duration / steps
 
 	for i = 1, steps do
-		local percent = i
-		local goalSize = UDim2.new(i / 100, 0, 1, 0)
-		TweenService:Create(fill, TweenInfo.new(timePerStep, Enum.EasingStyle.Linear), {
-			Size = goalSize
-		}):Play()
+		local percent = i / steps
+		fill.Size = UDim2.new(percent, 0, 1, 0)
+		percentText.Text = tostring(math.floor(percent * 100)) .. "%"
 
-		percentText.Text = percent .. "%"
-
-		if i % 10 == 0 then
+		if i % math.floor(steps / #messages) == 0 then
 			swapMessage()
 		end
 
-		task.wait(timePerStep)
+		task.wait(waitTime)
 	end
 
-	-- Remover todos os elementos
-	local fadeOut = TweenInfo.new(1)
-	for _, v in ipairs(gui:GetDescendants()) do
-		if v:IsA("TextLabel") or v:IsA("Frame") then
-			TweenService:Create(v, fadeOut, {
+	-- Anima fade de tudo
+	local fadeTween = TweenService:Create(bgFrame, TweenInfo.new(1), { BackgroundTransparency = 1 })
+	fadeTween:Play()
+
+	for _, obj in pairs(frame:GetDescendants()) do
+		if obj:IsA("TextLabel") or obj:IsA("Frame") then
+			TweenService:Create(obj, TweenInfo.new(1), {
 				TextTransparency = 1,
 				BackgroundTransparency = 1
 			}):Play()
 		end
 	end
-	task.wait(1.1)
+
+	task.wait(1.2)
 	gui:Destroy()
 end)
