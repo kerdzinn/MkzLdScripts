@@ -1,15 +1,22 @@
--- Garantir que tudo carregou
+-- Aguarda o jogo carregar completamente
+repeat task.wait() until game:IsLoaded()
+
+-- Serviços
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
 local player = Players.LocalPlayer
+
+-- Criar GUI na CoreGui (sobrepõe tudo)
 local gui = Instance.new("ScreenGui")
-gui.Name = "MkzLoadingUI"
 gui.IgnoreGuiInset = true
 gui.DisplayOrder = 1000
 gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
+gui.Name = "MkzLoadingScreen"
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = CoreGui
 
--- Fundo principal
+-- Fundo da tela
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1, 0, 1, 0)
 frame.Position = UDim2.new(0, 0, 0, 0)
@@ -50,8 +57,7 @@ progressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 progressBar.BorderSizePixel = 0
 progressBar.ZIndex = 11
 progressBar.Parent = frame
-local corner = Instance.new("UICorner", progressBar)
-corner.CornerRadius = UDim.new(0, 15)
+Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 15)
 
 local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
@@ -59,8 +65,7 @@ fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
 fill.ZIndex = 12
 fill.Parent = progressBar
-local fillCorner = Instance.new("UICorner", fill)
-fillCorner.CornerRadius = UDim.new(0, 15)
+Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 15)
 
 local percentText = Instance.new("TextLabel")
 percentText.Size = UDim2.new(0, 100, 0, 30)
@@ -73,31 +78,32 @@ percentText.Font = Enum.Font.GothamBold
 percentText.ZIndex = 11
 percentText.Parent = frame
 
--- Animações de mensagem
+-- Lista de mensagens
 local messages = {
     "Please wait, the script is loading...",
     "Leaving the game now may delete your pets and get you banned"
 }
-local messageIndex = 1
+local msgIndex = 1
+
+-- Alternar mensagens com animação
 local function swapMessage()
-    local oldPos = messageLabel.Position
     local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
         Position = UDim2.new(0.5, -900, 0.42, 0)
     })
     tweenOut:Play()
     tweenOut.Completed:Wait()
 
-    messageIndex = messageIndex % #messages + 1
-    messageLabel.Text = messages[messageIndex]
+    msgIndex = msgIndex % #messages + 1
+    messageLabel.Text = messages[msgIndex]
     messageLabel.Position = UDim2.new(0.5, 900, 0.42, 0)
 
     local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = oldPos
+        Position = UDim2.new(0.5, -300, 0.42, 0)
     })
     tweenIn:Play()
 end
 
--- Início da animação de carregamento
+-- Animação da barra de carregamento
 task.spawn(function()
     local duration = 110
     local steps = 100
@@ -105,14 +111,14 @@ task.spawn(function()
 
     for i = 1, steps do
         fill.Size = UDim2.new(i / steps, 0, 1, 0)
-        percentText.Text = i .. "%"
+        percentText.Text = tostring(i) .. "%"
         if i % 10 == 0 then
             swapMessage()
         end
         task.wait(waitTime)
     end
 
-    -- Fade out ao final
+    -- Desaparecer suavemente
     local fade = TweenService:Create(frame, TweenInfo.new(1), {
         BackgroundTransparency = 1
     })
