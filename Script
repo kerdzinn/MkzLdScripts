@@ -1,0 +1,139 @@
+-- Carregar na CoreGui para sobrepor tudo
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local StarterGui = game:GetService("StarterGui")
+
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Name = "MkzLoadingScreen"
+gui.DisplayOrder = 1000 -- Garantir que fique na frente de tudo
+gui.Parent = game:GetService("CoreGui")
+
+-- Tela escura
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+background.BackgroundTransparency = 0
+background.BorderSizePixel = 0
+background.Parent = gui
+
+-- Título Mkz Scripts
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0, 400, 0, 50)
+title.Position = UDim2.new(0.5, -200, 0.4, -80)
+title.Text = "Mkz Scripts"
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.BackgroundTransparency = 1
+title.Parent = background
+
+-- Mensagem animada
+local message = Instance.new("TextLabel")
+message.Size = UDim2.new(0, 600, 0, 40)
+message.Position = UDim2.new(0.5, -300, 0.4, -20)
+message.Font = Enum.Font.Gotham
+message.TextColor3 = Color3.fromRGB(200, 200, 200)
+message.TextScaled = true
+message.BackgroundTransparency = 1
+message.Text = ""
+message.Parent = background
+
+local messages = {
+    "Please wait, the script is loading...",
+    "Leaving the game now may delete your pets and get you banned"
+}
+
+local currentMsg = 1
+local function swapMessage()
+    -- anima sair pela esquerda
+    local tweenOut = TweenService:Create(message, TweenInfo.new(0.5), {
+        Position = UDim2.new(0.5, -900, 0.4, -20)
+    })
+    tweenOut:Play()
+    tweenOut.Completed:Wait()
+
+    message.Text = messages[currentMsg]
+    message.Position = UDim2.new(0.5, 900, 0.4, -20)
+
+    -- entra pela direita
+    local tweenIn = TweenService:Create(message, TweenInfo.new(0.5), {
+        Position = UDim2.new(0.5, -300, 0.4, -20)
+    })
+    tweenIn:Play()
+
+    currentMsg = currentMsg % #messages + 1
+end
+
+-- Barra de carregamento (fundo)
+local barBackground = Instance.new("Frame")
+barBackground.Size = UDim2.new(0, 500, 0, 30)
+barBackground.Position = UDim2.new(0.5, -250, 0.5, 50)
+barBackground.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+barBackground.BorderSizePixel = 0
+barBackground.BackgroundTransparency = 0
+barBackground.Parent = background
+barBackground.ClipsDescendants = true
+barBackground.AnchorPoint = Vector2.new(0, 0)
+barBackground.Name = "BarBackground"
+barBackground.ZIndex = 2
+barBackground:FindFirstChildOfClass("UICorner") or Instance.new("UICorner", barBackground).CornerRadius = UDim.new(0, 15)
+
+-- Barra de progresso (dentro)
+local barFill = Instance.new("Frame")
+barFill.Size = UDim2.new(0, 0, 1, 0)
+barFill.Position = UDim2.new(0, 0, 0, 0)
+barFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+barFill.BorderSizePixel = 0
+barFill.Name = "BarFill"
+barFill.Parent = barBackground
+barFill.ZIndex = 3
+Instance.new("UICorner", barFill).CornerRadius = UDim.new(0, 15)
+
+-- Número (opcional)
+local percentText = Instance.new("TextLabel")
+percentText.Size = UDim2.new(1, 0, 1, 0)
+percentText.Position = UDim2.new(0, 0, 0, 0)
+percentText.Text = "0%"
+percentText.Font = Enum.Font.GothamBold
+percentText.TextColor3 = Color3.new(1, 1, 1)
+percentText.TextScaled = true
+percentText.BackgroundTransparency = 1
+percentText.Parent = barBackground
+percentText.ZIndex = 4
+
+-- Iniciar carregamento
+local totalTime = 110
+local steps = 100
+local stepTime = totalTime / steps
+
+task.spawn(function()
+    for i = 1, steps do
+        local percent = i / steps
+        barFill:TweenSize(UDim2.new(percent, 0, 1, 0), "Out", "Quad", stepTime, true)
+        percentText.Text = math.floor(percent * 100) .. "%"
+        if i % 10 == 0 then
+            swapMessage()
+        end
+        task.wait(stepTime)
+    end
+
+    -- Sumir com a tela
+    TweenService:Create(background, TweenInfo.new(1), {
+        BackgroundTransparency = 1
+    }):Play()
+
+    for _, child in pairs(background:GetChildren()) do
+        if child:IsA("TextLabel") or child:IsA("Frame") then
+            TweenService:Create(child, TweenInfo.new(1), {
+                TextTransparency = 1,
+                BackgroundTransparency = 1
+            }):Play()
+        end
+    end
+
+    task.wait(1.2)
+    gui:Destroy()
+end)
