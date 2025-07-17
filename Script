@@ -1,136 +1,132 @@
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-screenGui.IgnoreGuiInset = true
-screenGui.DisplayOrder = 1000
-screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling 
+-- Garantir que tudo carregou
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "MkzLoadingUI"
+gui.IgnoreGuiInset = true
+gui.DisplayOrder = 1000
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
+-- Fundo principal
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(1, 0, 1, 0)
 frame.Position = UDim2.new(0, 0, 0, 0)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.BorderSizePixel = 0
-frame.ZIndex = 1000
-frame.Parent = screenGui
+frame.ZIndex = 10
+frame.Parent = gui
 
-local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 10)
-uiCorner.Parent = frame
-
--- Título principal
+-- Título
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(0, 800, 0, 200)
-title.Position = UDim2.new(0.5, -400, 0.25, 0)
+title.Size = UDim2.new(0, 800, 0, 100)
+title.Position = UDim2.new(0.5, -400, 0.3, 0)
 title.BackgroundTransparency = 1
 title.Text = "Mkz Scripts"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 80
+title.TextScaled = true
 title.Font = Enum.Font.GothamBold
-title.ZIndex = 1000
+title.ZIndex = 11
 title.Parent = frame
 
 -- Mensagem dinâmica
 local messageLabel = Instance.new("TextLabel")
-messageLabel.Size = UDim2.new(0, 600, 0, 60)
-messageLabel.Position = UDim2.new(0.5, -300, 0.45, 0)
+messageLabel.Size = UDim2.new(0, 600, 0, 50)
+messageLabel.Position = UDim2.new(0.5, -300, 0.42, 0)
 messageLabel.BackgroundTransparency = 1
 messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-messageLabel.TextSize = 30
+messageLabel.TextScaled = true
 messageLabel.Font = Enum.Font.Gotham
-messageLabel.Text = ""
-messageLabel.ZIndex = 1000
+messageLabel.Text = "Please wait, the script is loading..."
+messageLabel.ZIndex = 11
 messageLabel.Parent = frame
 
-local TweenService = game:GetService("TweenService")
+-- Barra de progresso
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0, 600, 0, 30)
+progressBar.Position = UDim2.new(0.5, -300, 0.52, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+progressBar.BorderSizePixel = 0
+progressBar.ZIndex = 11
+progressBar.Parent = frame
+local corner = Instance.new("UICorner", progressBar)
+corner.CornerRadius = UDim.new(0, 15)
 
+local fill = Instance.new("Frame")
+fill.Size = UDim2.new(0, 0, 1, 0)
+fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+fill.BorderSizePixel = 0
+fill.ZIndex = 12
+fill.Parent = progressBar
+local fillCorner = Instance.new("UICorner", fill)
+fillCorner.CornerRadius = UDim.new(0, 15)
+
+local percentText = Instance.new("TextLabel")
+percentText.Size = UDim2.new(0, 100, 0, 30)
+percentText.Position = UDim2.new(0.5, -50, 0.59, 0)
+percentText.BackgroundTransparency = 1
+percentText.Text = "0%"
+percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentText.TextScaled = true
+percentText.Font = Enum.Font.GothamBold
+percentText.ZIndex = 11
+percentText.Parent = frame
+
+-- Animações de mensagem
 local messages = {
     "Please wait, the script is loading...",
     "Leaving the game now may delete your pets and get you banned"
 }
-
-local msgIndex = 1
+local messageIndex = 1
 local function swapMessage()
-    local oldMsg = messageLabel.Text
+    local oldPos = messageLabel.Position
     local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = UDim2.new(0.5, -900, 0.45, 0)
+        Position = UDim2.new(0.5, -900, 0.42, 0)
     })
     tweenOut:Play()
     tweenOut.Completed:Wait()
 
-    msgIndex = msgIndex % #messages + 1
-    messageLabel.Text = messages[msgIndex]
-    messageLabel.Position = UDim2.new(0.5, 900, 0.45, 0)
+    messageIndex = messageIndex % #messages + 1
+    messageLabel.Text = messages[messageIndex]
+    messageLabel.Position = UDim2.new(0.5, 900, 0.42, 0)
 
     local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-        Position = UDim2.new(0.5, -300, 0.45, 0)
+        Position = oldPos
     })
     tweenIn:Play()
 end
 
--- Container da barra de progresso
-local progressContainer = Instance.new("Frame")
-progressContainer.Size = UDim2.new(0, 600, 0, 80)
-progressContainer.Position = UDim2.new(0.5, -300, 0.65, 0)
-progressContainer.BackgroundTransparency = 1
-progressContainer.ZIndex = 1000
-progressContainer.Parent = frame
+-- Início da animação de carregamento
+task.spawn(function()
+    local duration = 110
+    local steps = 100
+    local waitTime = duration / steps
 
-local progressText = Instance.new("TextLabel")
-progressText.Size = UDim2.new(1, 0, 0.5, 0)
-progressText.Position = UDim2.new(0, 0, 0, 0)
-progressText.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-progressText.Text = "0%"
-progressText.TextColor3 = Color3.fromRGB(255, 255, 255)
-progressText.TextSize = 40
-progressText.Font = Enum.Font.GothamBold
-progressText.ZIndex = 1000
-progressText.Parent = progressContainer
-
-local progressBar = Instance.new("Frame")
-progressBar.Size = UDim2.new(1, 0, 0.5, 0)
-progressBar.Position = UDim2.new(0, 0, 0.5, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-progressBar.BorderSizePixel = 0
-progressBar.ZIndex = 1000
-progressBar.Parent = progressContainer
-
-local uiCornerProgress = Instance.new("UICorner")
-uiCornerProgress.CornerRadius = UDim.new(0, 15) 
-uiCornerProgress.Parent = progressBar
-
-local progressFill = Instance.new("Frame")
-progressFill.Size = UDim2.new(0, 0, 1, 0)
-progressFill.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
-progressFill.BorderSizePixel = 0
-progressFill.ZIndex = 1001
-progressFill.Parent = progressBar
-
-local uiGradient = Instance.new("UIGradient")
-uiGradient.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 120, 0)),
-    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 200, 0)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 0))
-}
-uiGradient.Parent = progressFill
-
-local uiStroke = Instance.new("UIStroke")
-uiStroke.Thickness = 4
-uiStroke.Color = Color3.fromRGB(200, 200, 200)
-uiStroke.Transparency = 0.3
-uiStroke.Parent = progressBar
-
--- Duração e animação
-local duration = 110
-local increments = 100
-local stepTime = duration / increments
-
-for i = 0, increments do
-    progressFill.Size = UDim2.new(i / increments, 0, 1, 0)
-    progressText.Text = math.floor(i) .. "%"
-    if i % 10 == 0 then
-        swapMessage()
+    for i = 1, steps do
+        fill.Size = UDim2.new(i / steps, 0, 1, 0)
+        percentText.Text = i .. "%"
+        if i % 10 == 0 then
+            swapMessage()
+        end
+        task.wait(waitTime)
     end
-    wait(stepTime)
-end
 
--- Remover tela
-screenGui:Destroy()
+    -- Fade out ao final
+    local fade = TweenService:Create(frame, TweenInfo.new(1), {
+        BackgroundTransparency = 1
+    })
+    fade:Play()
+
+    for _, child in pairs(frame:GetChildren()) do
+        if child:IsA("TextLabel") or child:IsA("Frame") then
+            TweenService:Create(child, TweenInfo.new(1), {
+                TextTransparency = 1,
+                BackgroundTransparency = 1
+            }):Play()
+        end
+    end
+
+    task.wait(1.2)
+    gui:Destroy()
+end)
