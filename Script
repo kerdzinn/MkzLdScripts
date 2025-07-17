@@ -13,7 +13,7 @@ gui.Name = "MkzLoadingScreen"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = CoreGui
 
--- Fundo com animação de degradê fluido
+-- Fundo animado com degradê
 local gradientFrame = Instance.new("Frame")
 gradientFrame.Size = UDim2.new(1, 0, 1, 0)
 gradientFrame.Position = UDim2.new(0, 0, 0, 0)
@@ -30,7 +30,6 @@ uiGradient.Color = ColorSequence.new{
 uiGradient.Rotation = 0
 uiGradient.Parent = gradientFrame
 
--- Rotacionar gradiente suavemente
 task.spawn(function()
 	while gui do
 		uiGradient.Rotation = (uiGradient.Rotation + 0.1) % 360
@@ -48,7 +47,7 @@ frame.Parent = gui
 -- Título
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(0.8, 0, 0, 80)
-title.Position = UDim2.new(0.5, -200, 0.5, -120)
+title.Position = UDim2.new(0.5, 0, 0.55, -120)
 title.AnchorPoint = Vector2.new(0.5, 0.5)
 title.BackgroundTransparency = 1
 title.Text = "Mkz Scripts"
@@ -58,10 +57,10 @@ title.Font = Enum.Font.GothamBold
 title.ZIndex = 11
 title.Parent = frame
 
--- Mensagem dinâmica
+-- Mensagens dinâmicas
 local messageLabel = Instance.new("TextLabel")
 messageLabel.Size = UDim2.new(0.8, 0, 0, 40)
-messageLabel.Position = UDim2.new(0.5, -200, 0.5, -60)
+messageLabel.Position = UDim2.new(0.5, 0, 0.55, -60)
 messageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
 messageLabel.BackgroundTransparency = 1
 messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -71,12 +70,35 @@ messageLabel.Text = "Please wait, the script is loading..."
 messageLabel.ZIndex = 11
 messageLabel.Parent = frame
 
--- Barra de carregamento (menor, mais grossa)
+local messages = {
+	"Please wait, the script is loading...",
+	"Leaving the game now may delete your pets and get you banned"
+}
+local msgIndex = 1
+
+local function swapMessage()
+	local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
+		Position = UDim2.new(0.5, -800, 0.55, -60)
+	})
+	tweenOut:Play()
+	tweenOut.Completed:Wait()
+
+	msgIndex = msgIndex % #messages + 1
+	messageLabel.Text = messages[msgIndex]
+	messageLabel.Position = UDim2.new(0.5, 800, 0.55, -60)
+
+	local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
+		Position = UDim2.new(0.5, 0, 0.55, -60)
+	})
+	tweenIn:Play()
+end
+
+-- Barra de carregamento
 local progressBar = Instance.new("Frame")
-progressBar.Size = UDim2.new(0.6, 0, 0, 40)
-progressBar.Position = UDim2.new(0.5, 0, 0.5, 20)
+progressBar.Size = UDim2.new(0.6, 0, 0, 36)
+progressBar.Position = UDim2.new(0.5, 0, 0.55, 30)
 progressBar.AnchorPoint = Vector2.new(0.5, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+progressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 progressBar.BorderSizePixel = 0
 progressBar.ZIndex = 11
 progressBar.Parent = frame
@@ -84,7 +106,7 @@ Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 20)
 
 local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
-fill.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
 fill.ZIndex = 12
 fill.Parent = progressBar
@@ -93,7 +115,8 @@ Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 20)
 -- Porcentagem
 local percentText = Instance.new("TextLabel")
 percentText.Size = UDim2.new(0, 100, 0, 30)
-percentText.Position = UDim2.new(0.5, -50, 0.5, 75)
+percentText.Position = UDim2.new(0.5, 0, 0.55, 75)
+percentText.AnchorPoint = Vector2.new(0.5, 0)
 percentText.BackgroundTransparency = 1
 percentText.Text = "0%"
 percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -102,62 +125,37 @@ percentText.Font = Enum.Font.GothamBold
 percentText.ZIndex = 11
 percentText.Parent = frame
 
--- Lista de mensagens
-local messages = {
-    "Please wait, the script is loading...",
-    "Leaving the game now may delete your pets and get you banned",
-    "Thanks for using Mkz Scripts!"
-}
-local msgIndex = 1
-
-local function swapMessage()
-	local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-		Position = UDim2.new(0.5, -1000, 0.5, -60)
-	})
-	tweenOut:Play()
-	tweenOut.Completed:Wait()
-
-	msgIndex = msgIndex % #messages + 1
-	messageLabel.Text = messages[msgIndex]
-	messageLabel.Position = UDim2.new(0.5, 1000, 0.5, -60)
-
-	local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.4), {
-		Position = UDim2.new(0.5, -200, 0.5, -60)
-	})
-	tweenIn:Play()
-end
-
--- Animação contínua e suave da barra
+-- Animação
 task.spawn(function()
-	local duration = 10
-	local tween = TweenService:Create(fill, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-		Size = UDim2.new(1, 0, 1, 0)
-	})
-	tween:Play()
+	local totalTime = 110
+	local steps = 100
+	local timePerStep = totalTime / steps
 
-	for i = 1, 100 do
-		percentText.Text = i .. "%"
+	for i = 1, steps do
+		local percent = i
+		local goalSize = UDim2.new(i / 100, 0, 1, 0)
+		TweenService:Create(fill, TweenInfo.new(timePerStep, Enum.EasingStyle.Linear), {
+			Size = goalSize
+		}):Play()
+
+		percentText.Text = percent .. "%"
 		if i % 25 == 0 then
 			swapMessage()
 		end
-		task.wait(duration / 100)
+
+		task.wait(timePerStep)
 	end
 
-	-- Fade
-	local fade = TweenService:Create(frame, TweenInfo.new(1), {
-		BackgroundTransparency = 1
-	})
-	fade:Play()
-
-	for _, child in pairs(frame:GetChildren()) do
-		if child:IsA("TextLabel") or child:IsA("Frame") then
-			TweenService:Create(child, TweenInfo.new(1), {
+	-- Remover tudo
+	local fadeOut = TweenInfo.new(1)
+	for _, v in ipairs(gui:GetDescendants()) do
+		if v:IsA("TextLabel") or v:IsA("Frame") then
+			TweenService:Create(v, fadeOut, {
 				TextTransparency = 1,
 				BackgroundTransparency = 1
 			}):Play()
 		end
 	end
-
-	task.wait(1.2)
+	task.wait(1.1)
 	gui:Destroy()
 end)
