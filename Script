@@ -13,6 +13,7 @@ gui.DisplayOrder = 1000
 gui.ResetOnSpawn = false
 gui.Name = "MkzLoadingScreen"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Transparency = 0 -- necessário para fade-out funcionar
 gui.Parent = player:WaitForChild("PlayerGui")
 
 -- Fundo com gradiente preto e branco
@@ -150,6 +151,13 @@ task.spawn(function()
 
 		task.wait(waitTime)
 	end
+
+	-- Tween de desaparecimento suave (fade-out)
+	local fadeTween = TweenService:Create(gui, TweenInfo.new(0.7), {
+		Transparency = 1
+	})
+	fadeTween:Play()
+	fadeTween.Completed:Wait()
 
 	gui:Destroy()
 
