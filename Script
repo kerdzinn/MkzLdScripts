@@ -13,7 +13,6 @@ gui.DisplayOrder = 1000
 gui.ResetOnSpawn = false
 gui.Name = "MkzLoadingScreen"
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Transparency = 0 -- necessário para fade-out funcionar
 gui.Parent = player:WaitForChild("PlayerGui")
 
 -- Fundo com gradiente preto e branco
@@ -21,6 +20,7 @@ local bgFrame = Instance.new("Frame")
 bgFrame.Size = UDim2.new(1, 0, 1, 0)
 bgFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 bgFrame.BorderSizePixel = 0
+bgFrame.BackgroundTransparency = 0
 bgFrame.Parent = gui
 
 local gradient = Instance.new("UIGradient")
@@ -107,6 +107,7 @@ progressBar.Position = UDim2.new(0.5, 0, 0.5, 30)
 progressBar.AnchorPoint = Vector2.new(0.5, 0)
 progressBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 progressBar.BorderSizePixel = 0
+progressBar.BackgroundTransparency = 0
 progressBar.ZIndex = 11
 progressBar.Parent = frame
 Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 12)
@@ -115,6 +116,7 @@ local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
 fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
+fill.BackgroundTransparency = 0
 fill.ZIndex = 12
 fill.Parent = progressBar
 Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 12)
@@ -152,16 +154,29 @@ task.spawn(function()
 		task.wait(waitTime)
 	end
 
-	-- Tween de desaparecimento suave (fade-out)
-	local fadeTween = TweenService:Create(gui, TweenInfo.new(0.7), {
-		Transparency = 1
-	})
-	fadeTween:Play()
-	fadeTween.Completed:Wait()
+	-- Fade-out dos elementos
+	local fadeTime = 0.7
 
+	local function tweenTransparency(obj, props)
+		local tween = TweenService:Create(obj, TweenInfo.new(fadeTime), props)
+		tween:Play()
+		return tween
+	end
+
+	local tweens = {
+		tweenTransparency(bgFrame, {BackgroundTransparency = 1}),
+		tweenTransparency(texture, {ImageTransparency = 1}),
+		tweenTransparency(title, {TextTransparency = 1}),
+		tweenTransparency(messageLabel, {TextTransparency = 1}),
+		tweenTransparency(progressBar, {BackgroundTransparency = 1}),
+		tweenTransparency(fill, {BackgroundTransparency = 1}),
+		tweenTransparency(percentText, {TextTransparency = 1}),
+	}
+
+	task.wait(fadeTime)
 	gui:Destroy()
 
-	-- Executa o script externo direto
+	-- Executa o script externo
 	pcall(function()
 		loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
 	end)
