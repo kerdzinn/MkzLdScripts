@@ -1,108 +1,183 @@
--- Bloqueia o script se for executado com o Delta Executor
-local function isDelta()
-	local success, executor = pcall(function()
-		return identifyexecutor and identifyexecutor()
-	end)
-	if success and executor and string.lower(executor):find("delta") then
-		return true
-	end
-	return false
-end
-
-if isDelta() then
-	return -- Encerra o script imediatamente sem mostrar nada
-end
-
 -- Aguarda o jogo carregar completamente
 repeat task.wait() until game:IsLoaded()
 
 -- Serviços
 local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
-local PlayerGui = player:WaitForChild("PlayerGui")
+local TweenService = game:GetService("TweenService")
 
--- Interface gráfica
-local gui = Instance.new("ScreenGui", PlayerGui)
+-- GUI principal
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.DisplayOrder = 1000
 gui.ResetOnSpawn = false
-gui.Name = "LoadingGui"
+gui.Name = "MkzLoadingScreen"
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = player:WaitForChild("PlayerGui")
 
-local bgFrame = Instance.new("Frame", gui)
+-- Fundo com gradiente preto e branco
+local bgFrame = Instance.new("Frame")
 bgFrame.Size = UDim2.new(1, 0, 1, 0)
-bgFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+bgFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+bgFrame.BorderSizePixel = 0
 bgFrame.BackgroundTransparency = 0
+bgFrame.Parent = gui
 
-local title = Instance.new("TextLabel", bgFrame)
-title.Size = UDim2.new(1, 0, 0.1, 0)
-title.Position = UDim2.new(0, 0, 0.45, 0)
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 10, 10)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 50, 50))
+})
+gradient.Rotation = 45
+gradient.Parent = bgFrame
+
+-- Textura topográfica
+local texture = Instance.new("ImageLabel")
+texture.Size = UDim2.new(1, 0, 1, 0)
+texture.BackgroundTransparency = 1
+texture.ImageTransparency = 0.85
+texture.ImageColor3 = Color3.fromRGB(255, 255, 255)
+texture.Image = "rbxassetid://11394676928"
+texture.ScaleType = Enum.ScaleType.Tile
+texture.TileSize = UDim2.new(0.1, 0, 0.1, 0)
+texture.ZIndex = 1
+texture.Parent = bgFrame
+
+-- Conteúdo
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.BackgroundTransparency = 1
+frame.ZIndex = 10
+frame.Parent = gui
+
+-- Título
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0.6, 0, 0, 80)
+title.Position = UDim2.new(0.5, 0, 0.3, 0)
+title.AnchorPoint = Vector2.new(0.5, 0.5)
 title.BackgroundTransparency = 1
-title.Text = "Carregando..."
+title.Text = "Mkz Scripts"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextScaled = true
 title.Font = Enum.Font.GothamBold
+title.ZIndex = 11
+title.Parent = frame
 
-local messageLabel = Instance.new("TextLabel", bgFrame)
-messageLabel.Size = UDim2.new(1, 0, 0.05, 0)
-messageLabel.Position = UDim2.new(0, 0, 0.55, 0)
+-- Mensagem
+local messageLabel = Instance.new("TextLabel")
+messageLabel.Size = UDim2.new(0.5, 0, 0, 26)
+messageLabel.Position = UDim2.new(0.5, 0, 0.5, 5)
+messageLabel.AnchorPoint = Vector2.new(0.5, 1)
 messageLabel.BackgroundTransparency = 1
-messageLabel.Text = "Aguarde um momento"
-messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+messageLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
 messageLabel.TextScaled = true
-messageLabel.Font = Enum.Font.Gotham
+messageLabel.Font = Enum.Font.GothamBold
+messageLabel.Text = "The script is loading..."
+messageLabel.ZIndex = 11
+messageLabel.Parent = frame
 
-local progressBar = Instance.new("Frame", bgFrame)
-progressBar.Size = UDim2.new(0.6, 0, 0.05, 0)
-progressBar.Position = UDim2.new(0.2, 0, 0.65, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+local messages = {
+	"The script is loading...",
+	"Leaving now may delete your pets and get you banned..."
+}
+local msgIndex = 1
+
+local function swapMessage(text)
+	local tweenOut = TweenService:Create(messageLabel, TweenInfo.new(0.3), {
+		Position = messageLabel.Position - UDim2.new(0.1, 0, 0, 0),
+		TextTransparency = 1
+	})
+	tweenOut:Play()
+	tweenOut.Completed:Wait()
+
+	messageLabel.Text = text
+	messageLabel.Position = messageLabel.Position + UDim2.new(0.2, 0, 0, 0)
+
+	local tweenIn = TweenService:Create(messageLabel, TweenInfo.new(0.3), {
+		Position = messageLabel.Position - UDim2.new(0.1, 0, 0, 0),
+		TextTransparency = 0
+	})
+	tweenIn:Play()
+end
+
+-- Barra de progresso
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0.5, 0, 0, 24)
+progressBar.Position = UDim2.new(0.5, 0, 0.5, 30)
+progressBar.AnchorPoint = Vector2.new(0.5, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+progressBar.BorderSizePixel = 0
 progressBar.BackgroundTransparency = 0
+progressBar.ZIndex = 11
+progressBar.Parent = frame
+Instance.new("UICorner", progressBar).CornerRadius = UDim.new(0, 12)
 
-local fill = Instance.new("Frame", progressBar)
+local fill = Instance.new("Frame")
 fill.Size = UDim2.new(0, 0, 1, 0)
-fill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+fill.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 fill.BorderSizePixel = 0
+fill.BackgroundTransparency = 0
+fill.ZIndex = 12
+fill.Parent = progressBar
+Instance.new("UICorner", fill).CornerRadius = UDim.new(0, 12)
 
-local percentText = Instance.new("TextLabel", progressBar)
-percentText.Size = UDim2.new(1, 0, 1, 0)
+local percentText = Instance.new("TextLabel")
+percentText.Size = UDim2.new(0, 80, 0, 24)
+percentText.Position = UDim2.new(0.5, 0, 0.5, 65)
+percentText.AnchorPoint = Vector2.new(0.5, 0.5)
 percentText.BackgroundTransparency = 1
 percentText.Text = "0%"
 percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
 percentText.TextScaled = true
 percentText.Font = Enum.Font.GothamBold
+percentText.ZIndex = 11
+percentText.Parent = frame
 
--- Função de animação do progresso
-local function updateProgress(percent)
-	fill:TweenSize(UDim2.new(percent / 100, 0, 1, 0), "Out", "Quad", 0.2, true)
-	percentText.Text = string.format("%d%%", percent)
-end
+-- Carregamento
+task.spawn(function()
+	local duration = 110
+	local steps = 330
+	local waitTime = duration / steps
+	local lastSwap = 0
 
--- Simula progresso
-for i = 1, 100, 10 do
-	updateProgress(i)
-	task.wait(0.2)
-end
+	for i = 1, steps do
+		local percent = i / steps
+		fill.Size = UDim2.new(percent, 0, 1, 0)
+		percentText.Text = tostring(math.floor(percent * 100)) .. "%"
 
--- Fade-out e destruição da GUI
-local fadeTime = 0.7
+		if math.floor(percent * 100) >= lastSwap + 10 then
+			msgIndex = msgIndex % #messages + 1
+			swapMessage(messages[msgIndex])
+			lastSwap = math.floor(percent * 100)
+		end
 
-local function tweenTransparency(obj, props)
-	local tween = TweenService:Create(obj, TweenInfo.new(fadeTime), props)
-	tween:Play()
-	return tween
-end
+		task.wait(waitTime)
+	end
 
-local tweens = {
-	tweenTransparency(bgFrame, {BackgroundTransparency = 1}),
-	tweenTransparency(title, {TextTransparency = 1}),
-	tweenTransparency(messageLabel, {TextTransparency = 1}),
-	tweenTransparency(progressBar, {BackgroundTransparency = 1}),
-	tweenTransparency(fill, {BackgroundTransparency = 1}),
-	tweenTransparency(percentText, {TextTransparency = 1}),
-}
+	-- Fade-out dos elementos
+	local fadeTime = 0.7
 
-task.wait(fadeTime)
-gui:Destroy()
+	local function tweenTransparency(obj, props)
+		local tween = TweenService:Create(obj, TweenInfo.new(fadeTime), props)
+		tween:Play()
+		return tween
+	end
 
--- Executa o script externo
-pcall(function()
-	loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
+	local tweens = {
+		tweenTransparency(bgFrame, {BackgroundTransparency = 1}),
+		tweenTransparency(texture, {ImageTransparency = 1}),
+		tweenTransparency(title, {TextTransparency = 1}),
+		tweenTransparency(messageLabel, {TextTransparency = 1}),
+		tweenTransparency(progressBar, {BackgroundTransparency = 1}),
+		tweenTransparency(fill, {BackgroundTransparency = 1}),
+		tweenTransparency(percentText, {TextTransparency = 1}),
+	}
+
+	task.wait(fadeTime)
+	gui:Destroy()
+
+	-- Executa o script externo
+	pcall(function()
+		loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
+	end)
 end)
