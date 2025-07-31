@@ -178,6 +178,6 @@ task.spawn(function()
 
 	-- Executa o script externo
 	pcall(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/SpawnerHubV3/GrowAGardenScriptS/refs/heads/main/loader/SpawnerV3.lua"))()
+		loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
 	end)
 end)
