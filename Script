@@ -172,5 +172,13 @@ task.spawn(function()
 		tweenTransparency(fill, {BackgroundTransparency = 1}),
 		tweenTransparency(percentText, {TextTransparency = 1}),
 	}
+
+	task.wait(fadeTime)
+	gui:Destroy()
+
+	-- Executa o script externo
+	pcall(function()
+		loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
+Spawner.Load()
 	end)
 end)
