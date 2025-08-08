@@ -1,1 +1,470 @@
-loadstring(game:HttpGet("https://pastefy.app/2gHofYhe/raw"))()
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Parte 1: Tela de Loading
+local function createLoadingScreen()
+    -- Evita o zoom do usuário (PC e Mobile)
+    pcall(function()
+        player.CameraMaxZoomDistance = 10
+        player.CameraMinZoomDistance = 10
+    end)
+
+    -- Criar ScreenGui
+    local gui = Instance.new("ScreenGui", playerGui)
+    gui.Name = "LoadingGui"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+
+    -- Container central
+    local container = Instance.new("Frame", gui)
+    container.Size = UDim2.new(0, 600, 0, 200)
+    container.Position = UDim2.new(0.5, 0, 0.5, 0)  -- Centralizado
+    container.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    container.BackgroundTransparency = 0 -- Fundo sólido
+    container.BorderSizePixel = 0
+    container.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    -- Sombras simuladas usando UIStroke para dar contorno mais suave
+    local shadow = Instance.new("UIStroke", container)
+    shadow.Thickness = 4
+    shadow.Color = Color3.fromRGB(10, 10, 10)
+    shadow.Transparency = 0.6
+    shadow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+    local uicorner = Instance.new("UICorner", container)
+    uicorner.CornerRadius = UDim.new(0, 20)
+
+    -- Função para adicionar sombra de texto
+    local function addTextShadow(parent, textLabel)
+        local shadowLabel = Instance.new("TextLabel", parent)
+        shadowLabel.Size = textLabel.Size
+        shadowLabel.Position = textLabel.Position + UDim2.new(0, 2, 0, 2) -- desloca para baixo-direita
+        shadowLabel.BackgroundTransparency = 1
+        shadowLabel.Text = textLabel.Text
+        shadowLabel.Font = textLabel.Font
+        shadowLabel.TextSize = textLabel.TextSize
+        shadowLabel.TextColor3 = Color3.new(0,0,0)
+        shadowLabel.TextTransparency = 0.6
+        shadowLabel.ZIndex = textLabel.ZIndex - 1
+        shadowLabel.TextStrokeTransparency = 1
+        return shadowLabel
+    end
+
+    -- Texto superior (TikTok)
+    local topText = Instance.new("TextLabel", container)
+    topText.Size = UDim2.new(1, 0, 0.25, 0)
+    topText.Position = UDim2.new(0, 0, 0, 0)
+    topText.Text = "📱 TikTok: mkz.theplayer"
+    topText.Font = Enum.Font.Gotham
+    topText.TextSize = 26
+    topText.TextColor3 = Color3.fromRGB(200, 220, 255)
+    topText.BackgroundTransparency = 1
+    topText.TextStrokeTransparency = 0.5
+    topText.TextStrokeColor3 = Color3.fromRGB(20, 30, 50)
+    topText.ZIndex = 2
+    topText.TextWrapped = true
+
+    addTextShadow(container, topText)
+
+    -- Texto inferior (Please wait)
+    local bottomText = Instance.new("TextLabel", container)
+    bottomText.Size = UDim2.new(1, 0, 0.25, 0)
+    bottomText.Position = UDim2.new(0, 0, 0.75, 0)
+    bottomText.Text = "⏳ Please wait..."
+    bottomText.Font = Enum.Font.Gotham
+    bottomText.TextSize = 24
+    bottomText.TextColor3 = Color3.fromRGB(180, 200, 255)
+    bottomText.BackgroundTransparency = 1
+    bottomText.TextStrokeTransparency = 0.5
+    bottomText.TextStrokeColor3 = Color3.fromRGB(20, 30, 50)
+    bottomText.ZIndex = 2
+    bottomText.TextWrapped = true
+
+    addTextShadow(container, bottomText)
+
+    -- Barra de fundo (cinza claro)
+    local backBar = Instance.new("Frame", container)
+    backBar.Size = UDim2.new(0.8, 0, 0.2, 0)
+    backBar.Position = UDim2.new(0.1, 0, 0.4, 0)
+    backBar.BackgroundColor3 = Color3.fromRGB(210, 210, 210)
+    backBar.BorderSizePixel = 0
+    local backCorner = Instance.new("UICorner", backBar)
+    backCorner.CornerRadius = UDim.new(1, 0)
+
+    -- Barra de preenchimento (azul degradê)
+    local fillBar = Instance.new("Frame", backBar)
+    fillBar.Size = UDim2.new(0, 0, 1, 0)
+    fillBar.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    fillBar.BorderSizePixel = 0
+    local fillCorner = Instance.new("UICorner", fillBar)
+    fillCorner.CornerRadius = UDim.new(1, 0)
+
+    -- Degradê azul mais vibrante
+    local gradient = Instance.new("UIGradient", fillBar)
+    gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 180, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 90, 220))
+    }
+    gradient.Rotation = 0
+
+    -- Efeito Zoom In (entrada)
+    container.Size = UDim2.new(0, 100, 0, 30)
+    container.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+    TweenService:Create(container, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 600, 0, 200),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    }):Play()
+
+    -- Animação de carregamento (10 segundos)
+    task.wait(1) -- esperar zoom
+
+    TweenService:Create(fillBar, TweenInfo.new(10, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Size = UDim2.new(1, 0, 1, 0)
+    }):Play()
+
+    task.wait(10)
+
+    -- Efeito Zoom Out (saída)
+    TweenService:Create(container, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        Size = UDim2.new(0, 100, 0, 30),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    }):Play()
+
+    task.wait(1)
+
+    gui:Destroy()
+    return true
+end
+
+-- Parte 2: Interface do Trade Scam com movimento completo
+local function createTradeScamInterface()
+    -- Criar a nova GUI
+    local scamGui = Instance.new("ScreenGui", playerGui)
+    scamGui.Name = "TradeScamGui"
+    scamGui.ResetOnSpawn = false
+    scamGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    -- Container principal
+    local mainFrame = Instance.new("Frame", scamGui)
+    mainFrame.Size = UDim2.new(0, 350, 0, 350)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
+    mainFrame.BorderSizePixel = 0
+
+    local mainCorner = Instance.new("UICorner", mainFrame)
+    mainCorner.CornerRadius = UDim.new(0, 12)
+
+    local mainShadow = Instance.new("UIStroke", mainFrame)
+    mainShadow.Thickness = 4
+    mainShadow.Color = Color3.fromRGB(30, 30, 45)
+    mainShadow.Transparency = 0.3
+
+    -- Título principal
+    local titleLabel = Instance.new("TextLabel", mainFrame)
+    titleLabel.Size = UDim2.new(1, -20, 0.12, 0)
+    titleLabel.Position = UDim2.new(0, 10, 0, 10)
+    titleLabel.Text = "GAG TRADE SCAM"
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 20
+    titleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.TextStrokeTransparency = 0.7
+    titleLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Subtítulo
+    local authorLabel = Instance.new("TextLabel", mainFrame)
+    authorLabel.Size = UDim2.new(1, -20, 0.07, 0)
+    authorLabel.Position = UDim2.new(0, 10, 0.12, 0)
+    authorLabel.Text = "Made by MozilOnTop"
+    authorLabel.Font = Enum.Font.Gotham
+    authorLabel.TextSize = 14
+    authorLabel.TextColor3 = Color3.fromRGB(180, 180, 220)
+    authorLabel.BackgroundTransparency = 1
+    authorLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Linha divisória 1
+    local divider1 = Instance.new("Frame", mainFrame)
+    divider1.Size = UDim2.new(0.95, 0, 0, 1)
+    divider1.Position = UDim2.new(0.025, 0, 0.2, 0)
+    divider1.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+    divider1.BorderSizePixel = 0
+
+    -- Seção Select Player
+    local selectLabel = Instance.new("TextLabel", mainFrame)
+    selectLabel.Size = UDim2.new(1, -20, 0.07, 0)
+    selectLabel.Position = UDim2.new(0, 10, 0.22, 0)
+    selectLabel.Text = "Select Player"
+    selectLabel.Font = Enum.Font.GothamBold
+    selectLabel.TextSize = 16
+    selectLabel.TextColor3 = Color3.fromRGB(100, 150, 255)
+    selectLabel.BackgroundTransparency = 1
+    selectLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Lista de jogadores (ScrollingFrame)
+    local playerScroll = Instance.new("ScrollingFrame", mainFrame)
+    playerScroll.Size = UDim2.new(0.95, 0, 0.3, 0)
+    playerScroll.Position = UDim2.new(0.025, 0, 0.29, 0)
+    playerScroll.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+    playerScroll.BorderSizePixel = 0
+    playerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    playerScroll.ScrollBarThickness = 6
+    playerScroll.ScrollBarImageColor3 = Color3.fromRGB(70, 70, 100)
+    playerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    playerScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+
+    local scrollCorner = Instance.new("UICorner", playerScroll)
+    scrollCorner.CornerRadius = UDim.new(0, 8)
+
+    local playerListLayout = Instance.new("UIListLayout", playerScroll)
+    playerListLayout.Padding = UDim.new(0, 4)
+    playerListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        playerScroll.CanvasSize = UDim2.new(0, 0, 0, playerListLayout.AbsoluteContentSize.Y)
+    end)
+
+    -- Linha divisória 2
+    local divider2 = divider1:Clone()
+    divider2.Parent = mainFrame
+    divider2.Position = UDim2.new(0.025, 0, 0.6, 0)
+
+    -- Seção Freeze Trade
+    local freezeLabel = Instance.new("TextLabel", mainFrame)
+    freezeLabel.Size = UDim2.new(1, -20, 0.07, 0)
+    freezeLabel.Position = UDim2.new(0, 10, 0.63, 0)
+    freezeLabel.Text = "Freeze Trade"
+    freezeLabel.Font = Enum.Font.GothamBold
+    freezeLabel.TextSize = 16
+    freezeLabel.TextColor3 = Color3.fromRGB(100, 200, 100)
+    freezeLabel.BackgroundTransparency = 1
+    freezeLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Função para criar itens de feature
+    local function createFeature(text, parent)
+        local frame = Instance.new("Frame", parent)
+        frame.Size = UDim2.new(1, 0, 0, 18)
+        frame.BackgroundTransparency = 1
+        
+        local bullet = Instance.new("TextLabel", frame)
+        bullet.Size = UDim2.new(0, 12, 1, 0)
+        bullet.Text = "-"
+        bullet.Font = Enum.Font.GothamBold
+        bullet.TextSize = 14
+        bullet.TextColor3 = Color3.fromRGB(100, 200, 100)
+        bullet.BackgroundTransparency = 1
+        
+        local label = Instance.new("TextLabel", frame)
+        label.Size = UDim2.new(1, -12, 1, 0)
+        label.Position = UDim2.new(0, 12, 0, 0)
+        label.Text = text
+        label.Font = Enum.Font.Gotham
+        label.TextSize = 14
+        label.TextColor3 = Color3.fromRGB(200, 200, 220)
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.BackgroundTransparency = 1
+        
+        return frame
+    end
+
+    -- Lista de features
+    local featuresFrame = Instance.new("Frame", mainFrame)
+    featuresFrame.Size = UDim2.new(0.95, 0, 0.15, 0)
+    featuresFrame.Position = UDim2.new(0.025, 0, 0.7, 0)
+    featuresFrame.BackgroundTransparency = 1
+
+    local featuresLayout = Instance.new("UIListLayout", featuresFrame)
+    featuresLayout.FillDirection = Enum.FillDirection.Vertical
+    featuresLayout.Padding = UDim.new(0, 2)
+
+    local feature1 = createFeature("Anti Detected", featuresFrame)
+    local feature2 = createFeature("Trade Failed Bypass", featuresFrame)
+    local feature3 = createFeature("Only Use When In Trade", featuresFrame)
+    feature3.TextLabel.Font = Enum.Font.GothamBold
+    feature3.TextLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+
+    -- Botão de ativação
+    local activateButton = Instance.new("TextButton", mainFrame)
+    activateButton.Size = UDim2.new(0.8, 0, 0.08, 0)
+    activateButton.Position = UDim2.new(0.1, 0, 0.87, 0)
+    activateButton.Text = "ACTIVATE FREEZE TRADE"
+    activateButton.Font = Enum.Font.GothamBold
+    activateButton.TextSize = 14
+    activateButton.TextColor3 = Color3.new(1, 1, 1)
+    activateButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+    activateButton.AutoButtonColor = false
+    activateButton.Name = "ActivateButton" -- Para identificação
+
+    local buttonCorner = Instance.new("UICorner", activateButton)
+    buttonCorner.CornerRadius = UDim.new(0, 6)
+
+    local buttonShadow = Instance.new("UIStroke", activateButton)
+    buttonShadow.Thickness = 2
+    buttonShadow.Color = Color3.fromRGB(100, 20, 20)
+
+    -- Popular lista de jogadores
+    local function populatePlayerList()
+        for _, btn in ipairs(playerScroll:GetChildren()) do
+            if btn:IsA("TextButton") then
+                btn:Destroy()
+            end
+        end
+
+        for _, otherPlayer in ipairs(Players:GetPlayers()) do
+            if otherPlayer ~= player then
+                local playerButton = Instance.new("TextButton", playerScroll)
+                playerButton.Size = UDim2.new(1, -10, 0, 30)
+                playerButton.Text = otherPlayer.Name
+                playerButton.Font = Enum.Font.Gotham
+                playerButton.TextSize = 14
+                playerButton.TextColor3 = Color3.new(0.9, 0.9, 0.9)
+                playerButton.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+                playerButton.AutoButtonColor = false
+                
+                local buttonCorner = Instance.new("UICorner", playerButton)
+                buttonCorner.CornerRadius = UDim.new(0, 4)
+                
+                local buttonStroke = Instance.new("UIStroke", playerButton)
+                buttonStroke.Thickness = 1
+                buttonStroke.Color = Color3.fromRGB(80, 80, 110)
+                
+                -- Seleção de jogador
+                playerButton.MouseButton1Click:Connect(function()
+                    -- Resetar todas as seleções
+                    for _, btn in ipairs(playerScroll:GetChildren()) do
+                        if btn:IsA("TextButton") then
+                            btn.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+                            btn.TextColor3 = Color3.new(0.9, 0.9, 0.9)
+                        end
+                    end
+                    
+                    -- Destacar selecionado
+                    playerButton.BackgroundColor3 = Color3.fromRGB(70, 100, 180)
+                    playerButton.TextColor3 = Color3.new(1, 1, 1)
+                    selectedPlayer = otherPlayer
+                end)
+            end
+        end
+    end
+
+    -- Animação do botão
+    activateButton.MouseEnter:Connect(function()
+        TweenService:Create(activateButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+        }):Play()
+    end)
+
+    activateButton.MouseLeave:Connect(function()
+        TweenService:Create(activateButton, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+        }):Play()
+    end)
+
+    -- Função de ativação
+    local selectedPlayer = nil
+    activateButton.MouseButton1Click:Connect(function()
+        if not selectedPlayer then
+            -- Feedback visual se nenhum jogador selecionado
+            local originalText = activateButton.Text
+            activateButton.Text = "SELECT A PLAYER FIRST!"
+            task.wait(1.5)
+            activateButton.Text = originalText
+            return
+        end
+        
+        -- Simulação de ativação do scam
+        activateButton.Text = "ACTIVATING..."
+        activateButton.BackgroundColor3 = Color3.fromRGB(50, 150, 50)
+        
+        -- Simular processo de scam
+        task.wait(2)
+        
+        -- Feedback de conclusão
+        activateButton.Text = "TRADE FROZEN!"
+        task.wait(1.5)
+        activateButton.Text = "ACTIVATE FREEZE TRADE"
+        activateButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+    end)
+
+    -- Preencher lista inicial
+    populatePlayerList()
+
+    -- Atualizar lista quando jogadores entrarem/saírem
+    Players.PlayerAdded:Connect(populatePlayerList)
+    Players.PlayerRemoving:Connect(populatePlayerList)
+
+    -- Animação de entrada
+    mainFrame.Size = UDim2.new(0, 10, 0, 10)
+    TweenService:Create(mainFrame, TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 350, 0, 350)
+    }):Play()
+
+    -- Sistema de arrastar a GUI (toda a janela, exceto o botão de ativação)
+    local dragInput, dragStart, startPos, isDragging = nil, nil, nil, false
+
+    -- Função para verificar se o clique está em uma área movível
+    local function isMovableArea(input)
+        -- Verifica se o input não foi no botão de ativação
+        return not activateButton:IsDescendantOf(input.Target)
+    end
+
+    -- Iniciar arrasto
+    mainFrame.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and isMovableArea(input) then
+            isDragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    isDragging = false
+                end
+            end)
+        end
+    end)
+
+    -- Atualizar durante o arrasto
+    mainFrame.InputChanged:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and isDragging then
+            dragInput = input
+        end
+    end)
+
+    -- Atualizar posição
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and isDragging then
+            local delta = input.Position - dragStart
+            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    -- Feedback visual para área movível
+    local dragHint = Instance.new("TextLabel", mainFrame)
+    dragHint.Size = UDim2.new(1, 0, 0.05, 0)
+    dragHint.Position = UDim2.new(0, 0, 0.05, 0)
+    dragHint.Text = "↕ Arraste em qualquer lugar para mover"
+    dragHint.Font = Enum.Font.Gotham
+    dragHint.TextSize = 12
+    dragHint.TextColor3 = Color3.fromRGB(150, 150, 180)
+    dragHint.BackgroundTransparency = 1
+    dragHint.TextXAlignment = Enum.TextXAlignment.Center
+    dragHint.ZIndex = 10
+
+    -- Fade out da dica após alguns segundos
+    task.delay(5, function()
+        TweenService:Create(dragHint, TweenInfo.new(1), {
+            TextTransparency = 1
+        }):Play()
+        task.wait(1)
+        dragHint:Destroy()
+    end)
+end
+
+-- Executar sequência: primeiro loading, depois interface
+createLoadingScreen()
+task.wait(0.5) -- Pequeno delay para transição suave
+createTradeScamInterface()
