@@ -9,8 +9,8 @@ local playerGui = player:WaitForChild("PlayerGui")
 local function createLoadingScreen()
     -- Evita o zoom do usuário (PC e Mobile)
     pcall(function()
-        player.CameraMaxZoomDistance = 10
-        player.CameraMinZoomDistance = 10
+        player.CameraMaxZoomDistance = 14
+        player.CameraMinZoomDistance = 14
     end)
 
     -- Criar ScreenGui
@@ -169,7 +169,7 @@ local function createTradeScamInterface()
     local titleLabel = Instance.new("TextLabel", mainFrame)
     titleLabel.Size = UDim2.new(1, -20, 0.12, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 10)
-    titleLabel.Text = "GAG TRADE SCAM"
+    titleLabel.Text = "GaG Trading Freeze"
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextSize = 20
     titleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
@@ -182,7 +182,7 @@ local function createTradeScamInterface()
     local authorLabel = Instance.new("TextLabel", mainFrame)
     authorLabel.Size = UDim2.new(1, -20, 0.07, 0)
     authorLabel.Position = UDim2.new(0, 10, 0.12, 0)
-    authorLabel.Text = "Made by MozilOnTop"
+    authorLabel.Text = "Made by Mkz"
     authorLabel.Font = Enum.Font.Gotham
     authorLabel.TextSize = 14
     authorLabel.TextColor3 = Color3.fromRGB(180, 180, 220)
