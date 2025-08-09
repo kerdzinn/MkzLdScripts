@@ -156,6 +156,8 @@ local function createTradeScamInterface()
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
     mainFrame.BorderSizePixel = 0
+    mainFrame.Active = true
+    mainFrame.Selectable = true
 
     local mainCorner = Instance.new("UICorner", mainFrame)
     mainCorner.CornerRadius = UDim.new(0, 12)
@@ -403,25 +405,38 @@ local function createTradeScamInterface()
         Size = UDim2.new(0, 350, 0, 350)
     }):Play()
 
-    -- Sistema de arrastar a GUI (toda a janela, exceto o botão de ativação)
+    -- SISTEMA DE MOVIMENTO CORRIGIDO E FUNCIONAL
     local dragInput, dragStart, startPos, isDragging = nil, nil, nil, false
 
     -- Função para verificar se o clique está em uma área movível
     local function isMovableArea(input)
-        -- Verifica se o input não foi no botão de ativação
-        return not activateButton:IsDescendantOf(input.Target)
+        local target = input.Target
+        while target ~= nil and target ~= scamGui do
+            if target == activateButton then
+                return false
+            end
+            target = target.Parent
+        end
+        return true
     end
 
     -- Iniciar arrasto
     mainFrame.InputBegan:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and isMovableArea(input) then
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or 
+            input.UserInputType == Enum.UserInputType.Touch) and 
+            isMovableArea(input) then
+            
             isDragging = true
             dragStart = input.Position
             startPos = mainFrame.Position
             
-            input.Changed:Connect(function()
+            local connection
+            connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     isDragging = false
+                    if connection then
+                        connection:Disconnect()
+                    end
                 end
             end)
         end
@@ -429,7 +444,9 @@ local function createTradeScamInterface()
 
     -- Atualizar durante o arrasto
     mainFrame.InputChanged:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and isDragging then
+        if (input.UserInputType == Enum.UserInputType.MouseMovement or 
+            input.UserInputType == Enum.UserInputType.Touch) and 
+            isDragging then
             dragInput = input
         end
     end)
@@ -438,7 +455,12 @@ local function createTradeScamInterface()
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and isDragging then
             local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            mainFrame.Position = UDim2.new(
+                startPos.X.Scale, 
+                startPos.X.Offset + delta.X, 
+                startPos.Y.Scale, 
+                startPos.Y.Offset + delta.Y
+            )
         end
     end)
 
@@ -446,7 +468,7 @@ local function createTradeScamInterface()
     local dragHint = Instance.new("TextLabel", mainFrame)
     dragHint.Size = UDim2.new(1, 0, 0.05, 0)
     dragHint.Position = UDim2.new(0, 0, 0.05, 0)
-    dragHint.Text = "↕ Arraste em qualquer lugar para mover"
+    dragHint.Text = "↕ Drag anywhere to move (except button)"
     dragHint.Font = Enum.Font.Gotham
     dragHint.TextSize = 12
     dragHint.TextColor3 = Color3.fromRGB(150, 150, 180)
