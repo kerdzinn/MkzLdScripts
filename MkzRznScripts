@@ -14,35 +14,39 @@ local function createLoadingScreen()
     end)
 
     -- Criar ScreenGui
-    local gui = Instance.new("ScreenGui", playerGui)
+    local gui = Instance.new("ScreenGui")
     gui.Name = "LoadingGui"
     gui.IgnoreGuiInset = true
     gui.ResetOnSpawn = false
+    gui.Parent = playerGui
 
     -- Container central
-    local container = Instance.new("Frame", gui)
+    local container = Instance.new("Frame")
     container.Size = UDim2.new(0, 600, 0, 200)
-    container.Position = UDim2.new(0.5, 0, 0.5, 0)  -- Centralizado
+    container.Position = UDim2.new(0.5, 0, 0.5, 0)
     container.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    container.BackgroundTransparency = 0 -- Fundo sólido
+    container.BackgroundTransparency = 0
     container.BorderSizePixel = 0
     container.AnchorPoint = Vector2.new(0.5, 0.5)
+    container.Parent = gui
 
-    -- Sombras simuladas usando UIStroke para dar contorno mais suave
-    local shadow = Instance.new("UIStroke", container)
+    -- Sombras simuladas usando UIStroke
+    local shadow = Instance.new("UIStroke")
     shadow.Thickness = 4
     shadow.Color = Color3.fromRGB(10, 10, 10)
     shadow.Transparency = 0.6
     shadow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    shadow.Parent = container
 
-    local uicorner = Instance.new("UICorner", container)
+    local uicorner = Instance.new("UICorner")
     uicorner.CornerRadius = UDim.new(0, 20)
+    uicorner.Parent = container
 
     -- Função para adicionar sombra de texto
     local function addTextShadow(parent, textLabel)
-        local shadowLabel = Instance.new("TextLabel", parent)
+        local shadowLabel = Instance.new("TextLabel")
         shadowLabel.Size = textLabel.Size
-        shadowLabel.Position = textLabel.Position + UDim2.new(0, 2, 0, 2) -- desloca para baixo-direita
+        shadowLabel.Position = textLabel.Position + UDim2.new(0, 2, 0, 2)
         shadowLabel.BackgroundTransparency = 1
         shadowLabel.Text = textLabel.Text
         shadowLabel.Font = textLabel.Font
@@ -51,11 +55,12 @@ local function createLoadingScreen()
         shadowLabel.TextTransparency = 0.6
         shadowLabel.ZIndex = textLabel.ZIndex - 1
         shadowLabel.TextStrokeTransparency = 1
+        shadowLabel.Parent = parent
         return shadowLabel
     end
 
     -- Texto superior (TikTok)
-    local topText = Instance.new("TextLabel", container)
+    local topText = Instance.new("TextLabel")
     topText.Size = UDim2.new(1, 0, 0.25, 0)
     topText.Position = UDim2.new(0, 0, 0, 0)
     topText.Text = "📱 TikTok: mkz.theplayer"
@@ -67,11 +72,12 @@ local function createLoadingScreen()
     topText.TextStrokeColor3 = Color3.fromRGB(20, 30, 50)
     topText.ZIndex = 2
     topText.TextWrapped = true
+    topText.Parent = container
 
     addTextShadow(container, topText)
 
     -- Texto inferior (Please wait)
-    local bottomText = Instance.new("TextLabel", container)
+    local bottomText = Instance.new("TextLabel")
     bottomText.Size = UDim2.new(1, 0, 0.25, 0)
     bottomText.Position = UDim2.new(0, 0, 0.75, 0)
     bottomText.Text = "⏳ Please wait..."
@@ -83,33 +89,41 @@ local function createLoadingScreen()
     bottomText.TextStrokeColor3 = Color3.fromRGB(20, 30, 50)
     bottomText.ZIndex = 2
     bottomText.TextWrapped = true
+    bottomText.Parent = container
 
     addTextShadow(container, bottomText)
 
     -- Barra de fundo (cinza claro)
-    local backBar = Instance.new("Frame", container)
+    local backBar = Instance.new("Frame")
     backBar.Size = UDim2.new(0.8, 0, 0.2, 0)
     backBar.Position = UDim2.new(0.1, 0, 0.4, 0)
     backBar.BackgroundColor3 = Color3.fromRGB(210, 210, 210)
     backBar.BorderSizePixel = 0
-    local backCorner = Instance.new("UICorner", backBar)
+    backBar.Parent = container
+    
+    local backCorner = Instance.new("UICorner")
     backCorner.CornerRadius = UDim.new(1, 0)
+    backCorner.Parent = backBar
 
     -- Barra de preenchimento (azul degradê)
-    local fillBar = Instance.new("Frame", backBar)
+    local fillBar = Instance.new("Frame")
     fillBar.Size = UDim2.new(0, 0, 1, 0)
     fillBar.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
     fillBar.BorderSizePixel = 0
-    local fillCorner = Instance.new("UICorner", fillBar)
+    fillBar.Parent = backBar
+    
+    local fillCorner = Instance.new("UICorner")
     fillCorner.CornerRadius = UDim.new(1, 0)
+    fillCorner.Parent = fillBar
 
     -- Degradê azul mais vibrante
-    local gradient = Instance.new("UIGradient", fillBar)
+    local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 180, 255)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 90, 220))
     }
     gradient.Rotation = 0
+    gradient.Parent = fillBar
 
     -- Efeito Zoom In (entrada)
     container.Size = UDim2.new(0, 100, 0, 30)
@@ -144,31 +158,34 @@ end
 -- Parte 2: Interface do Trade Scam com movimento completo
 local function createTradeScamInterface()
     -- Criar a nova GUI
-    local scamGui = Instance.new("ScreenGui", playerGui)
+    local scamGui = Instance.new("ScreenGui")
     scamGui.Name = "TradeScamGui"
     scamGui.ResetOnSpawn = false
     scamGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    scamGui.Parent = playerGui
 
     -- Container principal
-    local mainFrame = Instance.new("Frame", scamGui)
+    local mainFrame = Instance.new("Frame")
     mainFrame.Size = UDim2.new(0, 350, 0, 350)
     mainFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
-    mainFrame.Selectable = true
+    mainFrame.Parent = scamGui
 
-    local mainCorner = Instance.new("UICorner", mainFrame)
+    local mainCorner = Instance.new("UICorner")
     mainCorner.CornerRadius = UDim.new(0, 12)
+    mainCorner.Parent = mainFrame
 
-    local mainShadow = Instance.new("UIStroke", mainFrame)
+    local mainShadow = Instance.new("UIStroke")
     mainShadow.Thickness = 4
     mainShadow.Color = Color3.fromRGB(30, 30, 45)
     mainShadow.Transparency = 0.3
+    mainShadow.Parent = mainFrame
 
     -- Título principal
-    local titleLabel = Instance.new("TextLabel", mainFrame)
+    local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0.12, 0)
     titleLabel.Position = UDim2.new(0, 10, 0, 10)
     titleLabel.Text = "GaG Trading Freeze"
@@ -179,9 +196,10 @@ local function createTradeScamInterface()
     titleLabel.TextStrokeTransparency = 0.7
     titleLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = mainFrame
 
     -- Subtítulo
-    local authorLabel = Instance.new("TextLabel", mainFrame)
+    local authorLabel = Instance.new("TextLabel")
     authorLabel.Size = UDim2.new(1, -20, 0.07, 0)
     authorLabel.Position = UDim2.new(0, 10, 0.12, 0)
     authorLabel.Text = "Made by Mkz"
@@ -190,16 +208,18 @@ local function createTradeScamInterface()
     authorLabel.TextColor3 = Color3.fromRGB(180, 180, 220)
     authorLabel.BackgroundTransparency = 1
     authorLabel.TextXAlignment = Enum.TextXAlignment.Left
+    authorLabel.Parent = mainFrame
 
     -- Linha divisória 1
-    local divider1 = Instance.new("Frame", mainFrame)
+    local divider1 = Instance.new("Frame")
     divider1.Size = UDim2.new(0.95, 0, 0, 1)
     divider1.Position = UDim2.new(0.025, 0, 0.2, 0)
     divider1.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
     divider1.BorderSizePixel = 0
+    divider1.Parent = mainFrame
 
     -- Seção Select Player
-    local selectLabel = Instance.new("TextLabel", mainFrame)
+    local selectLabel = Instance.new("TextLabel")
     selectLabel.Size = UDim2.new(1, -20, 0.07, 0)
     selectLabel.Position = UDim2.new(0, 10, 0.22, 0)
     selectLabel.Text = "Select Player"
@@ -208,9 +228,10 @@ local function createTradeScamInterface()
     selectLabel.TextColor3 = Color3.fromRGB(100, 150, 255)
     selectLabel.BackgroundTransparency = 1
     selectLabel.TextXAlignment = Enum.TextXAlignment.Left
+    selectLabel.Parent = mainFrame
 
     -- Lista de jogadores (ScrollingFrame)
-    local playerScroll = Instance.new("ScrollingFrame", mainFrame)
+    local playerScroll = Instance.new("ScrollingFrame")
     playerScroll.Size = UDim2.new(0.95, 0, 0.3, 0)
     playerScroll.Position = UDim2.new(0.025, 0, 0.29, 0)
     playerScroll.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
@@ -220,23 +241,31 @@ local function createTradeScamInterface()
     playerScroll.ScrollBarImageColor3 = Color3.fromRGB(70, 70, 100)
     playerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     playerScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    playerScroll.Active = true
+    playerScroll.Parent = mainFrame
 
-    local scrollCorner = Instance.new("UICorner", playerScroll)
+    local scrollCorner = Instance.new("UICorner")
     scrollCorner.CornerRadius = UDim.new(0, 8)
+    scrollCorner.Parent = playerScroll
 
-    local playerListLayout = Instance.new("UIListLayout", playerScroll)
+    local playerListLayout = Instance.new("UIListLayout")
     playerListLayout.Padding = UDim.new(0, 4)
+    playerListLayout.Parent = playerScroll
+    
     playerListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         playerScroll.CanvasSize = UDim2.new(0, 0, 0, playerListLayout.AbsoluteContentSize.Y)
     end)
 
     -- Linha divisória 2
-    local divider2 = divider1:Clone()
-    divider2.Parent = mainFrame
+    local divider2 = Instance.new("Frame")
+    divider2.Size = UDim2.new(0.95, 0, 0, 1)
     divider2.Position = UDim2.new(0.025, 0, 0.6, 0)
+    divider2.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+    divider2.BorderSizePixel = 0
+    divider2.Parent = mainFrame
 
     -- Seção Freeze Trade
-    local freezeLabel = Instance.new("TextLabel", mainFrame)
+    local freezeLabel = Instance.new("TextLabel")
     freezeLabel.Size = UDim2.new(1, -20, 0.07, 0)
     freezeLabel.Position = UDim2.new(0, 10, 0.63, 0)
     freezeLabel.Text = "Freeze Trade"
@@ -245,52 +274,56 @@ local function createTradeScamInterface()
     freezeLabel.TextColor3 = Color3.fromRGB(100, 200, 100)
     freezeLabel.BackgroundTransparency = 1
     freezeLabel.TextXAlignment = Enum.TextXAlignment.Left
+    freezeLabel.Parent = mainFrame
+
+    -- Lista de features
+    local featuresFrame = Instance.new("Frame")
+    featuresFrame.Size = UDim2.new(0.95, 0, 0.15, 0)
+    featuresFrame.Position = UDim2.new(0.025, 0, 0.7, 0)
+    featuresFrame.BackgroundTransparency = 1
+    featuresFrame.Parent = mainFrame
+
+    local featuresLayout = Instance.new("UIListLayout")
+    featuresLayout.FillDirection = Enum.FillDirection.Vertical
+    featuresLayout.Padding = UDim.new(0, 2)
+    featuresLayout.Parent = featuresFrame
 
     -- Função para criar itens de feature
-    local function createFeature(text, parent)
-        local frame = Instance.new("Frame", parent)
+    local function createFeature(text, isWarning)
+        local frame = Instance.new("Frame")
         frame.Size = UDim2.new(1, 0, 0, 18)
         frame.BackgroundTransparency = 1
+        frame.Parent = featuresFrame
         
-        local bullet = Instance.new("TextLabel", frame)
+        local bullet = Instance.new("TextLabel")
         bullet.Size = UDim2.new(0, 12, 1, 0)
         bullet.Text = "-"
         bullet.Font = Enum.Font.GothamBold
         bullet.TextSize = 14
         bullet.TextColor3 = Color3.fromRGB(100, 200, 100)
         bullet.BackgroundTransparency = 1
+        bullet.Parent = frame
         
-        local label = Instance.new("TextLabel", frame)
+        local label = Instance.new("TextLabel")
         label.Size = UDim2.new(1, -12, 1, 0)
         label.Position = UDim2.new(0, 12, 0, 0)
         label.Text = text
-        label.Font = Enum.Font.Gotham
+        label.Font = isWarning and Enum.Font.GothamBold or Enum.Font.Gotham
         label.TextSize = 14
-        label.TextColor3 = Color3.fromRGB(200, 200, 220)
+        label.TextColor3 = isWarning and Color3.fromRGB(255, 255, 100) or Color3.fromRGB(200, 200, 220)
         label.TextXAlignment = Enum.TextXAlignment.Left
         label.BackgroundTransparency = 1
+        label.Parent = frame
         
         return frame
     end
 
-    -- Lista de features
-    local featuresFrame = Instance.new("Frame", mainFrame)
-    featuresFrame.Size = UDim2.new(0.95, 0, 0.15, 0)
-    featuresFrame.Position = UDim2.new(0.025, 0, 0.7, 0)
-    featuresFrame.BackgroundTransparency = 1
-
-    local featuresLayout = Instance.new("UIListLayout", featuresFrame)
-    featuresLayout.FillDirection = Enum.FillDirection.Vertical
-    featuresLayout.Padding = UDim.new(0, 2)
-
-    local feature1 = createFeature("Anti Detected", featuresFrame)
-    local feature2 = createFeature("Trade Failed Bypass", featuresFrame)
-    local feature3 = createFeature("Only Use When In Trade", featuresFrame)
-    feature3.TextLabel.Font = Enum.Font.GothamBold
-    feature3.TextLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+    createFeature("Anti Detected")
+    createFeature("Trade Failed Bypass")
+    createFeature("Only Use When In Trade", true)
 
     -- Botão de ativação
-    local activateButton = Instance.new("TextButton", mainFrame)
+    local activateButton = Instance.new("TextButton")
     activateButton.Size = UDim2.new(0.8, 0, 0.08, 0)
     activateButton.Position = UDim2.new(0.1, 0, 0.87, 0)
     activateButton.Text = "ACTIVATE FREEZE TRADE"
@@ -299,26 +332,67 @@ local function createTradeScamInterface()
     activateButton.TextColor3 = Color3.new(1, 1, 1)
     activateButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
     activateButton.AutoButtonColor = false
-    activateButton.Name = "ActivateButton" -- Para identificação
+    activateButton.Name = "ActivateButton"
+    activateButton.Active = true
+    activateButton.Parent = mainFrame
 
-    local buttonCorner = Instance.new("UICorner", activateButton)
+    local buttonCorner = Instance.new("UICorner")
     buttonCorner.CornerRadius = UDim.new(0, 6)
+    buttonCorner.Parent = activateButton
 
-    local buttonShadow = Instance.new("UIStroke", activateButton)
+    local buttonShadow = Instance.new("UIStroke")
     buttonShadow.Thickness = 2
     buttonShadow.Color = Color3.fromRGB(100, 20, 20)
+    buttonShadow.Parent = activateButton
+
+    -- SISTEMA DE MOVIMENTO CORRIGIDO
+    local dragToggle = nil
+    local dragStart = nil
+    local startPos = nil
+
+    local function updateInput(input)
+        local delta = input.Position - dragStart
+        local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        mainFrame.Position = position
+    end
+
+    -- Eventos de input para movimento
+    mainFrame.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+
+    mainFrame.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if dragToggle then
+                updateInput(input)
+            end
+        end
+    end)
 
     -- Popular lista de jogadores
+    local selectedPlayer = nil
+    
     local function populatePlayerList()
-        for _, btn in ipairs(playerScroll:GetChildren()) do
-            if btn:IsA("TextButton") then
-                btn:Destroy()
+        -- Limpar lista existente
+        for _, child in ipairs(playerScroll:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
             end
         end
 
         for _, otherPlayer in ipairs(Players:GetPlayers()) do
             if otherPlayer ~= player then
-                local playerButton = Instance.new("TextButton", playerScroll)
+                local playerButton = Instance.new("TextButton")
                 playerButton.Size = UDim2.new(1, -10, 0, 30)
                 playerButton.Text = otherPlayer.Name
                 playerButton.Font = Enum.Font.Gotham
@@ -326,13 +400,17 @@ local function createTradeScamInterface()
                 playerButton.TextColor3 = Color3.new(0.9, 0.9, 0.9)
                 playerButton.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
                 playerButton.AutoButtonColor = false
+                playerButton.Active = true
+                playerButton.Parent = playerScroll
                 
-                local buttonCorner = Instance.new("UICorner", playerButton)
-                buttonCorner.CornerRadius = UDim.new(0, 4)
+                local pButtonCorner = Instance.new("UICorner")
+                pButtonCorner.CornerRadius = UDim.new(0, 4)
+                pButtonCorner.Parent = playerButton
                 
-                local buttonStroke = Instance.new("UIStroke", playerButton)
-                buttonStroke.Thickness = 1
-                buttonStroke.Color = Color3.fromRGB(80, 80, 110)
+                local pButtonStroke = Instance.new("UIStroke")
+                pButtonStroke.Thickness = 1
+                pButtonStroke.Color = Color3.fromRGB(80, 80, 110)
+                pButtonStroke.Parent = playerButton
                 
                 -- Seleção de jogador
                 playerButton.MouseButton1Click:Connect(function()
@@ -367,7 +445,6 @@ local function createTradeScamInterface()
     end)
 
     -- Função de ativação
-    local selectedPlayer = nil
     activateButton.MouseButton1Click:Connect(function()
         if not selectedPlayer then
             -- Feedback visual se nenhum jogador selecionado
@@ -396,8 +473,16 @@ local function createTradeScamInterface()
     populatePlayerList()
 
     -- Atualizar lista quando jogadores entrarem/saírem
-    Players.PlayerAdded:Connect(populatePlayerList)
-    Players.PlayerRemoving:Connect(populatePlayerList)
+    local playersConnection1 = Players.PlayerAdded:Connect(populatePlayerList)
+    local playersConnection2 = Players.PlayerRemoving:Connect(populatePlayerList)
+
+    -- Cleanup quando GUI for destruída
+    scamGui.AncestryChanged:Connect(function()
+        if not scamGui.Parent then
+            if playersConnection1 then playersConnection1:Disconnect() end
+            if playersConnection2 then playersConnection2:Disconnect() end
+        end
+    end)
 
     -- Animação de entrada
     mainFrame.Size = UDim2.new(0, 10, 0, 10)
@@ -405,84 +490,187 @@ local function createTradeScamInterface()
         Size = UDim2.new(0, 350, 0, 350)
     }):Play()
 
-    -- SISTEMA DE MOVIMENTO CORRIGIDO E FUNCIONAL
-    local dragInput, dragStart, startPos, isDragging = nil, nil, nil, false
+    -- Botão de fechar (X) - Estilo Grow a Garden
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0, 25, 0, 25)
+    closeButton.Position = UDim2.new(1, -30, 0, 5)
+    closeButton.Text = "×"
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.TextSize = 18
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
+    closeButton.AutoButtonColor = false
+    closeButton.Active = true
+    closeButton.ZIndex = 15
+    closeButton.Parent = mainFrame
 
-    -- Função para verificar se o clique está em uma área movível
-    local function isMovableArea(input)
-        local target = input.Target
-        while target ~= nil and target ~= scamGui do
-            if target == activateButton then
-                return false
-            end
-            target = target.Parent
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(1, 0)
+    closeCorner.Parent = closeButton
+
+    -- Animação do botão fechar - Estilo mais suave
+    closeButton.MouseEnter:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.15), {
+            BackgroundColor3 = Color3.fromRGB(200, 35, 51),
+            Size = UDim2.new(0, 27, 0, 27)
+        }):Play()
+    end)
+
+    closeButton.MouseLeave:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.15), {
+            BackgroundColor3 = Color3.fromRGB(220, 53, 69),
+            Size = UDim2.new(0, 25, 0, 25)
+        }):Play()
+    end)
+
+    -- Função para criar a bolinha minimizada
+    local function createMinimizedOrb()
+        local orbFrame = Instance.new("Frame")
+        orbFrame.Size = UDim2.new(0, 60, 0, 60)
+        orbFrame.Position = UDim2.new(0, 20, 0, 20)
+        orbFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+        orbFrame.Active = true
+        orbFrame.Parent = scamGui
+
+        local orbCorner = Instance.new("UICorner")
+        orbCorner.CornerRadius = UDim.new(1, 0)
+        orbCorner.Parent = orbFrame
+
+        local orbStroke = Instance.new("UIStroke")
+        orbStroke.Thickness = 3
+        orbStroke.Color = Color3.fromRGB(100, 150, 255)
+        orbStroke.Parent = orbFrame
+
+        -- Adicionar a imagem (substitua o ID pela sua imagem)
+        local orbImage = Instance.new("ImageLabel")
+        orbImage.Size = UDim2.new(0.8, 0, 0.8, 0)
+        orbImage.Position = UDim2.new(0.1, 0, 0.1, 0)
+        orbImage.BackgroundTransparency = 1
+        orbImage.Image = "rbxassetid://79222138683693" -- Sua imagem personalizada!
+        orbImage.ScaleType = Enum.ScaleType.Fit
+        orbImage.Parent = orbFrame
+
+        local orbImageCorner = Instance.new("UICorner")
+        orbImageCorner.CornerRadius = UDim.new(1, 0)
+        orbImageCorner.Parent = orbImage
+
+        -- Efeito de glow/brilho
+        local orbGlow = Instance.new("UIStroke")
+        orbGlow.Thickness = 1
+        orbGlow.Color = Color3.fromRGB(150, 200, 255)
+        orbGlow.Transparency = 0.3
+        orbGlow.Parent = orbFrame
+
+        -- Sistema de arrasto para a bolinha
+        local orbDragToggle = nil
+        local orbDragStart = nil
+        local orbStartPos = nil
+        local wasDragging = false
+
+        local function updateOrbInput(input)
+            local delta = input.Position - orbDragStart
+            local position = UDim2.new(orbStartPos.X.Scale, orbStartPos.X.Offset + delta.X, orbStartPos.Y.Scale, orbStartPos.Y.Offset + delta.Y)
+            orbFrame.Position = position
         end
-        return true
+
+        orbFrame.InputBegan:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                orbDragToggle = true
+                orbDragStart = input.Position
+                orbStartPos = orbFrame.Position
+                wasDragging = false
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        orbDragToggle = false
+                        -- Se não houve movimento significativo, é um clique
+                        if not wasDragging then
+                            -- Reabrir a interface principal
+                            orbFrame:Destroy()
+                            
+                            -- Recriar e mostrar a interface principal
+                            mainFrame.Size = UDim2.new(0, 10, 0, 10)
+                            mainFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+                            mainFrame.Visible = true
+                            
+                            TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                                Size = UDim2.new(0, 350, 0, 350)
+                            }):Play()
+                        end
+                    end
+                end)
+            end
+        end)
+
+        orbFrame.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                if orbDragToggle then
+                    wasDragging = true
+                    updateOrbInput(input)
+                end
+            end
+        end)
+
+        -- Efeito hover na bolinha
+        orbFrame.MouseEnter:Connect(function()
+            TweenService:Create(orbStroke, TweenInfo.new(0.2), {
+                Color = Color3.fromRGB(150, 200, 255)
+            }):Play()
+            TweenService:Create(orbFrame, TweenInfo.new(0.2), {
+                Size = UDim2.new(0, 65, 0, 65)
+            }):Play()
+        end)
+
+        orbFrame.MouseLeave:Connect(function()
+            TweenService:Create(orbStroke, TweenInfo.new(0.2), {
+                Color = Color3.fromRGB(100, 150, 255)
+            }):Play()
+            TweenService:Create(orbFrame, TweenInfo.new(0.2), {
+                Size = UDim2.new(0, 60, 0, 60)
+            }):Play()
+        end)
+
+        return orbFrame
     end
 
-    -- Iniciar arrasto
-    mainFrame.InputBegan:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseButton1 or 
-            input.UserInputType == Enum.UserInputType.Touch) and 
-            isMovableArea(input) then
-            
-            isDragging = true
-            dragStart = input.Position
-            startPos = mainFrame.Position
-            
-            local connection
-            connection = input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    isDragging = false
-                    if connection then
-                        connection:Disconnect()
-                    end
-                end
-            end)
-        end
-    end)
-
-    -- Atualizar durante o arrasto
-    mainFrame.InputChanged:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseMovement or 
-            input.UserInputType == Enum.UserInputType.Touch) and 
-            isDragging then
-            dragInput = input
-        end
-    end)
-
-    -- Atualizar posição
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and isDragging then
-            local delta = input.Position - dragStart
-            mainFrame.Position = UDim2.new(
-                startPos.X.Scale, 
-                startPos.X.Offset + delta.X, 
-                startPos.Y.Scale, 
-                startPos.Y.Offset + delta.Y
-            )
-        end
+    -- Função do botão fechar
+    closeButton.MouseButton1Click:Connect(function()
+        -- Animação de saída da interface principal
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 10, 0, 10)
+        }):Play()
+        
+        task.wait(0.4)
+        mainFrame.Visible = false
+        
+        -- Criar a bolinha minimizada
+        createMinimizedOrb()
     end)
 
     -- Feedback visual para área movível
-    local dragHint = Instance.new("TextLabel", mainFrame)
+    local dragHint = Instance.new("TextLabel")
     dragHint.Size = UDim2.new(1, 0, 0.05, 0)
     dragHint.Position = UDim2.new(0, 0, 0.05, 0)
-    dragHint.Text = "↕ Drag anywhere to move (except button)"
+    dragHint.Text = "↕ Drag to move"
     dragHint.Font = Enum.Font.Gotham
     dragHint.TextSize = 12
     dragHint.TextColor3 = Color3.fromRGB(150, 150, 180)
     dragHint.BackgroundTransparency = 1
     dragHint.TextXAlignment = Enum.TextXAlignment.Center
     dragHint.ZIndex = 10
+    dragHint.Parent = mainFrame
 
     -- Fade out da dica após alguns segundos
     task.delay(5, function()
-        TweenService:Create(dragHint, TweenInfo.new(1), {
-            TextTransparency = 1
-        }):Play()
-        task.wait(1)
-        dragHint:Destroy()
+        if dragHint and dragHint.Parent then
+            TweenService:Create(dragHint, TweenInfo.new(1), {
+                TextTransparency = 1
+            }):Play()
+            task.wait(1)
+            if dragHint and dragHint.Parent then
+                dragHint:Destroy()
+            end
+        end
     end)
 end
 
