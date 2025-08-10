@@ -1,3 +1,10 @@
+-- ========================================
+-- MKZ TRADE SCAM SCRIPT - VERSÃO COMPLETA
+-- Criado por: Mkz
+-- TikTok: mkz.theplayer  
+-- Total de linhas: 709
+-- ========================================
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -5,7 +12,24 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Parte 1: Tela de Loading
+-- ========================================
+-- CONFIGURAÇÕES GLOBAIS
+-- ========================================
+local CONFIG = {
+    LOADING_TIME = 10,
+    UI_SIZE = {350, 350},
+    ORB_SIZE = 60,
+    COLORS = {
+        PRIMARY = Color3.fromRGB(100, 150, 255),
+        SECONDARY = Color3.fromRGB(255, 50, 50),
+        BACKGROUND = Color3.fromRGB(10, 10, 15),
+        CLOSE_BUTTON = Color3.fromRGB(220, 53, 69)
+    }
+}
+
+-- ========================================
+-- PARTE 1: TELA DE LOADING
+-- ========================================
 local function createLoadingScreen()
     -- Evita o zoom do usuário (PC e Mobile)
     pcall(function()
@@ -134,14 +158,14 @@ local function createLoadingScreen()
         Position = UDim2.new(0.5, 0, 0.5, 0)
     }):Play()
 
-    -- Animação de carregamento (10 segundos)
+    -- Animação de carregamento (100 segundos)
     task.wait(1) -- esperar zoom
 
-    TweenService:Create(fillBar, TweenInfo.new(10, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    TweenService:Create(fillBar, TweenInfo.new(100, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
         Size = UDim2.new(1, 0, 1, 0)
     }):Play()
 
-    task.wait(10)
+    task.wait(100)
 
     -- Efeito Zoom Out (saída)
     TweenService:Create(container, TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
@@ -155,7 +179,9 @@ local function createLoadingScreen()
     return true
 end
 
--- Parte 2: Interface do Trade Scam com movimento completo
+-- ========================================
+-- PARTE 2: INTERFACE DO TRADE SCAM
+-- ========================================
 local function createTradeScamInterface()
     -- Criar a nova GUI
     local scamGui = Instance.new("ScreenGui")
@@ -171,7 +197,7 @@ local function createTradeScamInterface()
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
     mainFrame.BorderSizePixel = 0
-    mainFrame.Active = true
+    mainFrame.Active = true -- IMPORTANTE para captar eventos de input
     mainFrame.Parent = scamGui
 
     local mainCorner = Instance.new("UICorner")
@@ -241,7 +267,7 @@ local function createTradeScamInterface()
     playerScroll.ScrollBarImageColor3 = Color3.fromRGB(70, 70, 100)
     playerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     playerScroll.ScrollingDirection = Enum.ScrollingDirection.Y
-    playerScroll.Active = true
+    playerScroll.Active = true -- Para não interferir no arrasto
     playerScroll.Parent = mainFrame
 
     local scrollCorner = Instance.new("UICorner")
@@ -333,7 +359,7 @@ local function createTradeScamInterface()
     activateButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
     activateButton.AutoButtonColor = false
     activateButton.Name = "ActivateButton"
-    activateButton.Active = true
+    activateButton.Active = true -- Para não interferir no arrasto
     activateButton.Parent = mainFrame
 
     local buttonCorner = Instance.new("UICorner")
@@ -345,7 +371,9 @@ local function createTradeScamInterface()
     buttonShadow.Color = Color3.fromRGB(100, 20, 20)
     buttonShadow.Parent = activateButton
 
-    -- SISTEMA DE MOVIMENTO CORRIGIDO
+    -- ========================================
+    -- SISTEMA DE MOVIMENTO DA INTERFACE
+    -- ========================================
     local dragToggle = nil
     local dragStart = nil
     local startPos = nil
@@ -379,7 +407,9 @@ local function createTradeScamInterface()
         end
     end)
 
-    -- Popular lista de jogadores
+    -- ========================================
+    -- SISTEMA DE JOGADORES
+    -- ========================================
     local selectedPlayer = nil
     
     local function populatePlayerList()
@@ -431,7 +461,9 @@ local function createTradeScamInterface()
         end
     end
 
-    -- Animação do botão
+    -- ========================================
+    -- BOTÃO DE ATIVAÇÃO E FUNCIONALIDADES
+    -- ========================================
     activateButton.MouseEnter:Connect(function()
         TweenService:Create(activateButton, TweenInfo.new(0.2), {
             BackgroundColor3 = Color3.fromRGB(220, 50, 50)
@@ -490,7 +522,9 @@ local function createTradeScamInterface()
         Size = UDim2.new(0, 350, 0, 350)
     }):Play()
 
-    -- Botão de fechar (X) - Estilo Grow a Garden
+    -- ========================================
+    -- SISTEMA DE MINIMIZAÇÃO (BOLINHA)
+    -- ========================================
     local closeButton = Instance.new("TextButton")
     closeButton.Size = UDim2.new(0, 25, 0, 25)
     closeButton.Position = UDim2.new(1, -30, 0, 5)
@@ -552,6 +586,8 @@ local function createTradeScamInterface()
         -- Tentar diferentes formatos de URL
         local imageIds = {
             "rbxassetid://79222138683693",
+            "http://www.roblox.com/asset/?id=79222138683693",
+            "https://assetdelivery.roblox.com/v1/asset/?id=79222138683693",
             "rbxasset://textures/face.png" -- Fallback final
         }
         
@@ -563,7 +599,7 @@ local function createTradeScamInterface()
                 print("Tentando carregar imagem: " .. imageIds[currentIndex])
                 currentIndex = currentIndex + 1
                 
-                task.wait(1) -- Aguarda 1 segundo
+                task.wait(2) -- Aguarda 2 segundos
                 if not orbImage.IsLoaded and currentIndex <= #imageIds then
                     print("Falha ao carregar, tentando próxima...")
                     tryNextImage()
@@ -701,7 +737,26 @@ local function createTradeScamInterface()
     end)
 end
 
+-- ========================================
+-- EXECUÇÃO DO SCRIPT PRINCIPAL
+-- ========================================
+
 -- Executar sequência: primeiro loading, depois interface
+print("🚀 Iniciando MKZ Trade Scam Script...")
+print("📱 TikTok: mkz.theplayer")
+print("⏳ Aguarde o carregamento...")
+
 createLoadingScreen()
 task.wait(0.5) -- Pequeno delay para transição suave
+
+print("✅ Loading concluído! Interface iniciando...")
 createTradeScamInterface()
+
+print("🎯 Script carregado com sucesso!")
+print("💡 Dica: Arraste a interface para mover")
+print("❌ Clique no X para minimizar")
+print("⚫ Clique na bolinha para reabrir")
+
+-- ========================================
+-- FIM DO SCRIPT
+-- ========================================
