@@ -541,14 +541,43 @@ local function createTradeScamInterface()
         orbStroke.Color = Color3.fromRGB(100, 150, 255)
         orbStroke.Parent = orbFrame
 
-        -- Adicionar a imagem (substitua o ID pela sua imagem)
+        -- Adicionar a imagem (testando múltiplos formatos)
         local orbImage = Instance.new("ImageLabel")
         orbImage.Size = UDim2.new(0.8, 0, 0.8, 0)
         orbImage.Position = UDim2.new(0.1, 0, 0.1, 0)
         orbImage.BackgroundTransparency = 1
-        orbImage.Image = "rbxassetid://79222138683693" -- Sua imagem personalizada!
         orbImage.ScaleType = Enum.ScaleType.Fit
         orbImage.Parent = orbFrame
+        
+        -- Tentar diferentes formatos de URL
+        local imageIds = {
+            "rbxassetid://79222138683693",
+            "http://www.roblox.com/asset/?id=79222138683693",
+            "https://assetdelivery.roblox.com/v1/asset/?id=79222138683693",
+            "rbxasset://textures/face.png" -- Fallback final
+        }
+        
+        local currentIndex = 1
+        
+        local function tryNextImage()
+            if currentIndex <= #imageIds then
+                orbImage.Image = imageIds[currentIndex]
+                print("Tentando carregar imagem: " .. imageIds[currentIndex])
+                currentIndex = currentIndex + 1
+                
+                task.wait(2) -- Aguarda 2 segundos
+                if not orbImage.IsLoaded and currentIndex <= #imageIds then
+                    print("Falha ao carregar, tentando próxima...")
+                    tryNextImage()
+                elseif orbImage.IsLoaded then
+                    print("Imagem carregada com sucesso!")
+                else
+                    print("Todas as tentativas falharam, usando ícone padrão")
+                end
+            end
+        end
+        
+        tryNextImage()
 
         local orbImageCorner = Instance.new("UICorner")
         orbImageCorner.CornerRadius = UDim.new(1, 0)
