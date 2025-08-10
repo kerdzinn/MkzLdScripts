@@ -552,8 +552,6 @@ local function createTradeScamInterface()
         -- Tentar diferentes formatos de URL
         local imageIds = {
             "rbxassetid://79222138683693",
-            "http://www.roblox.com/asset/?id=79222138683693",
-            "https://assetdelivery.roblox.com/v1/asset/?id=79222138683693",
             "rbxasset://textures/face.png" -- Fallback final
         }
         
@@ -565,7 +563,7 @@ local function createTradeScamInterface()
                 print("Tentando carregar imagem: " .. imageIds[currentIndex])
                 currentIndex = currentIndex + 1
                 
-                task.wait(2) -- Aguarda 2 segundos
+                task.wait(1) -- Aguarda 1 segundo
                 if not orbImage.IsLoaded and currentIndex <= #imageIds then
                     print("Falha ao carregar, tentando próxima...")
                     tryNextImage()
