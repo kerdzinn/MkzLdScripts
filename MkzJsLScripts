@@ -34,7 +34,7 @@ local CONFIG = {
 -- Mutações corretas do Grow a Garden
 local mutations = {
     "Shiny", "Inverted", "Frozen", "Windy", "Golden", "Mega", 
-    "Tiny", "IronSkin", "Radiante", "Rainbow", "Shocked", "Ascended"
+    "Tiny", "IronSkin", "Radiant", "Rainbow", "Shocked", "Ascended"
 }
 
 local currentMutation = mutations[math.random(#mutations)]
@@ -555,4 +555,167 @@ local function createMutationInterface()
         end
     end
 
-    header.In
+    header.InputBegan:Connect(function(input)
+        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragToggle = false
+                end
+            end)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if dragToggle then
+                updateInput(input)
+            end
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = false
+        end
+    end)
+
+    -- ========================================
+    -- BOTÕES DE AÇÃO (SEM SEÇÃO DE STATUS)
+    -- ========================================
+    local function createActionButton(text, position, color, icon)
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(0.9, 0, 0, 45)
+        button.Position = position
+        button.Text = icon .. " " .. text
+        button.Font = Enum.Font.GothamBold
+        button.TextSize = 14
+        button.TextColor3 = Color3.new(1, 1, 1)
+        button.BackgroundColor3 = color
+        button.AutoButtonColor = false
+        button.Active = true
+        button.Parent = mainFrame
+
+        local buttonCorner = Instance.new("UICorner")
+        buttonCorner.CornerRadius = UDim.new(0, 8)
+        buttonCorner.Parent = button
+
+        local buttonGradient = Instance.new("UIGradient")
+        buttonGradient.Color = ColorSequence.new{
+            ColorSequenceKeypoint.new(0, color),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(
+                math.max(color.R * 255 - 30, 0),
+                math.max(color.G * 255 - 30, 0),
+                math.max(color.B * 255 - 30, 0)
+            ))
+        }
+        buttonGradient.Rotation = 90
+        buttonGradient.Parent = button
+
+        return button
+    end
+
+    -- Botão Reroll Mutation
+    local rerollButton = createActionButton(
+        "REROLL MUTATION",
+        UDim2.new(0.05, 0, 0, 80),
+        Color3.fromRGB(100, 180, 255),
+        "🎲"
+    )
+
+    -- Botão Toggle ESP
+    local toggleButton = createActionButton(
+        espVisible and "DISABLE ESP" or "ENABLE ESP",
+        UDim2.new(0.05, 0, 0, 140),
+        espVisible and Color3.fromRGB(255, 150, 100) or CONFIG.COLORS.SUCCESS,
+        espVisible and "👁️" or "👀"
+    )
+
+    -- Botão Find Machine
+    local findButton = createActionButton(
+        "FIND MACHINE",
+        UDim2.new(0.05, 0, 0, 200),
+        Color3.fromRGB(150, 100, 255),
+        "🔍"
+    )
+
+    -- Criar bolinha minimizada
+    local orbFrame, orbText = createMinimizedOrb(mainGui, function()
+        print("🔮 Tentando abrir interface...")
+        mainFrame.Visible = true
+        orbFrame.Visible = false
+        print("✅ Interface aberta!")
+    end)
+    orbFrame.Visible = false
+
+    -- ========================================
+    -- FUNCIONALIDADES DOS BOTÕES
+    -- ========================================
+    rerollButton.MouseButton1Click:Connect(function()
+        if not isRerolling then
+            print("🎲 Iniciando reroll...")
+            rerollMutation()
+            task.wait(2) -- Aguarda o reroll terminar
+            createESPEffect()
+            orbText.Text = currentMutation
+            print("🎲 Nova mutação: " .. currentMutation)
+        else
+            print("⚠️ Reroll já em andamento!")
+        end
+    end)
+
+    toggleButton.MouseButton1Click:Connect(function()
+        espVisible = not espVisible
+        toggleButton.Text = (espVisible and "👁️ DISABLE ESP" or "👀 ENABLE ESP")
+        toggleButton.BackgroundColor3 = espVisible and Color3.fromRGB(255, 150, 100) or CONFIG.COLORS.SUCCESS
+        
+        createESPEffect()
+        print(espVisible and "👁️ ESP ativado" or "👀 ESP desativado")
+    end)
+
+    findButton.MouseButton1Click:Connect(function()
+        machine, ballPart = findMutationMachine()
+        if machine then
+            print("🔍 Máquina de mutação encontrada!")
+            createESPEffect()
+            
+            local originalText = findButton.Text
+            findButton.Text = "✅ MACHINE FOUND"
+            task.wait(1.5)
+            findButton.Text = originalText
+        else
+            print("❌ Máquina de mutação não encontrada!")
+            local originalText = findButton.Text
+            findButton.Text = "❌ NOT FOUND"
+            task.wait(1.5)
+            findButton.Text = originalText
+        end
+    end)
+
+    -- Fechar interface e mostrar bolinha
+    closeButton.MouseButton1Click:Connect(function()
+        print("❌ Fechando interface...")
+        mainFrame.Visible = false
+        orbFrame.Visible = true
+        print("🔮 Bolinha ativada!")
+    end)
+
+    -- Criar ESP inicial se máquina foi encontrada
+    if machine and ballPart then
+        createESPEffect()
+    end
+end
+
+-- ========================================
+-- INICIALIZAÇÃO
+-- ========================================
+local function main()
+    createLoadingScreen()
+    createMutationInterface()
+end
+
+-- Executar
+main()
