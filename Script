@@ -1,7 +1,7 @@
 -- ========================================
 -- MKZ TRADE SCAM SCRIPT - VERSÃO COMPLETA
--- Criado por: Mkz
--- TikTok: mkz.theplayer  
+-- Criado por: Phantom
+-- TikTok: phantomzisreal  
 -- Total de linhas: 709
 -- ========================================
 
@@ -228,7 +228,7 @@ local function createTradeScamInterface()
     local authorLabel = Instance.new("TextLabel")
     authorLabel.Size = UDim2.new(1, -20, 0.07, 0)
     authorLabel.Position = UDim2.new(0, 10, 0.12, 0)
-    authorLabel.Text = "Made by Mkz"
+    authorLabel.Text = "Made by phantomzisreal"
     authorLabel.Font = Enum.Font.Gotham
     authorLabel.TextSize = 14
     authorLabel.TextColor3 = Color3.fromRGB(180, 180, 220)
