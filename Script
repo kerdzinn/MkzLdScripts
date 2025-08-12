@@ -87,7 +87,7 @@ local function createLoadingScreen()
     local topText = Instance.new("TextLabel")
     topText.Size = UDim2.new(1, 0, 0.25, 0)
     topText.Position = UDim2.new(0, 0, 0, 0)
-    topText.Text = "📱 TikTok: mkz.theplayer"
+    topText.Text = "📱 TikTok: phantomzisreal"
     topText.Font = Enum.Font.Gotham
     topText.TextSize = 26
     topText.TextColor3 = Color3.fromRGB(200, 220, 255)
