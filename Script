@@ -197,7 +197,7 @@ local function createTradeScamInterface()
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 15)
     mainFrame.BorderSizePixel = 0
-    mainFrame.Active = true -- IMPORTANTE para captar eventos de input
+    mainFrame.Active = true
     mainFrame.Parent = scamGui
 
     local mainCorner = Instance.new("UICorner")
@@ -267,7 +267,7 @@ local function createTradeScamInterface()
     playerScroll.ScrollBarImageColor3 = Color3.fromRGB(70, 70, 100)
     playerScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     playerScroll.ScrollingDirection = Enum.ScrollingDirection.Y
-    playerScroll.Active = true -- Para não interferir no arrasto
+    playerScroll.Active = true
     playerScroll.Parent = mainFrame
 
     local scrollCorner = Instance.new("UICorner")
@@ -359,7 +359,7 @@ local function createTradeScamInterface()
     activateButton.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
     activateButton.AutoButtonColor = false
     activateButton.Name = "ActivateButton"
-    activateButton.Active = true -- Para não interferir no arrasto
+    activateButton.Active = true
     activateButton.Parent = mainFrame
 
     local buttonCorner = Instance.new("UICorner")
@@ -531,7 +531,7 @@ local function createTradeScamInterface()
     closeButton.Text = "×"
     closeButton.Font = Enum.Font.GothamBold
     closeButton.TextSize = 18
-    closeButton.TextColor3 = Color3.fromRGB(255,
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
     closeButton.AutoButtonColor = false
     closeButton.Active = true
@@ -586,6 +586,8 @@ local function createTradeScamInterface()
         -- Tentar diferentes formatos de URL
         local imageIds = {
             "rbxassetid://79222138683693",
+            "http://www.roblox.com/asset/?id=79222138683693",
+            "https://assetdelivery.roblox.com/v1/asset/?id=79222138683693",
             "rbxasset://textures/face.png" -- Fallback final
         }
         
@@ -597,7 +599,7 @@ local function createTradeScamInterface()
                 print("Tentando carregar imagem: " .. imageIds[currentIndex])
                 currentIndex = currentIndex + 1
                 
-                task.wait(1) -- Aguarda 1 segundo
+                task.wait(2) -- Aguarda 2 segundos
                 if not orbImage.IsLoaded and currentIndex <= #imageIds then
                     print("Falha ao carregar, tentando próxima...")
                     tryNextImage()
