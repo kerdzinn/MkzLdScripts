@@ -532,3 +532,229 @@ local function createTradeScamInterface()
     closeButton.Font = Enum.Font.GothamBold
     closeButton.TextSize = 18
     closeButton.TextColor3 = Color3.fromRGB(255,
+    closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
+    closeButton.AutoButtonColor = false
+    closeButton.Active = true
+    closeButton.ZIndex = 15
+    closeButton.Parent = mainFrame
+
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(1, 0)
+    closeCorner.Parent = closeButton
+
+    -- Animação do botão fechar - Estilo mais suave
+    closeButton.MouseEnter:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.15), {
+            BackgroundColor3 = Color3.fromRGB(200, 35, 51),
+            Size = UDim2.new(0, 27, 0, 27)
+        }):Play()
+    end)
+
+    closeButton.MouseLeave:Connect(function()
+        TweenService:Create(closeButton, TweenInfo.new(0.15), {
+            BackgroundColor3 = Color3.fromRGB(220, 53, 69),
+            Size = UDim2.new(0, 25, 0, 25)
+        }):Play()
+    end)
+
+    -- Função para criar a bolinha minimizada
+    local function createMinimizedOrb()
+        local orbFrame = Instance.new("Frame")
+        orbFrame.Size = UDim2.new(0, 60, 0, 60)
+        orbFrame.Position = UDim2.new(0, 20, 0, 20)
+        orbFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+        orbFrame.Active = true
+        orbFrame.Parent = scamGui
+
+        local orbCorner = Instance.new("UICorner")
+        orbCorner.CornerRadius = UDim.new(1, 0)
+        orbCorner.Parent = orbFrame
+
+        local orbStroke = Instance.new("UIStroke")
+        orbStroke.Thickness = 3
+        orbStroke.Color = Color3.fromRGB(100, 150, 255)
+        orbStroke.Parent = orbFrame
+
+        -- Adicionar a imagem (testando múltiplos formatos)
+        local orbImage = Instance.new("ImageLabel")
+        orbImage.Size = UDim2.new(0.8, 0, 0.8, 0)
+        orbImage.Position = UDim2.new(0.1, 0, 0.1, 0)
+        orbImage.BackgroundTransparency = 1
+        orbImage.ScaleType = Enum.ScaleType.Fit
+        orbImage.Parent = orbFrame
+        
+        -- Tentar diferentes formatos de URL
+        local imageIds = {
+            "rbxassetid://79222138683693",
+            "rbxasset://textures/face.png" -- Fallback final
+        }
+        
+        local currentIndex = 1
+        
+        local function tryNextImage()
+            if currentIndex <= #imageIds then
+                orbImage.Image = imageIds[currentIndex]
+                print("Tentando carregar imagem: " .. imageIds[currentIndex])
+                currentIndex = currentIndex + 1
+                
+                task.wait(1) -- Aguarda 1 segundo
+                if not orbImage.IsLoaded and currentIndex <= #imageIds then
+                    print("Falha ao carregar, tentando próxima...")
+                    tryNextImage()
+                elseif orbImage.IsLoaded then
+                    print("Imagem carregada com sucesso!")
+                else
+                    print("Todas as tentativas falharam, usando ícone padrão")
+                end
+            end
+        end
+        
+        tryNextImage()
+
+        local orbImageCorner = Instance.new("UICorner")
+        orbImageCorner.CornerRadius = UDim.new(1, 0)
+        orbImageCorner.Parent = orbImage
+
+        -- Efeito de glow/brilho
+        local orbGlow = Instance.new("UIStroke")
+        orbGlow.Thickness = 1
+        orbGlow.Color = Color3.fromRGB(150, 200, 255)
+        orbGlow.Transparency = 0.3
+        orbGlow.Parent = orbFrame
+
+        -- Sistema de arrasto para a bolinha
+        local orbDragToggle = nil
+        local orbDragStart = nil
+        local orbStartPos = nil
+        local wasDragging = false
+
+        local function updateOrbInput(input)
+            local delta = input.Position - orbDragStart
+            local position = UDim2.new(orbStartPos.X.Scale, orbStartPos.X.Offset + delta.X, orbStartPos.Y.Scale, orbStartPos.Y.Offset + delta.Y)
+            orbFrame.Position = position
+        end
+
+        orbFrame.InputBegan:Connect(function(input)
+            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+                orbDragToggle = true
+                orbDragStart = input.Position
+                orbStartPos = orbFrame.Position
+                wasDragging = false
+                
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        orbDragToggle = false
+                        -- Se não houve movimento significativo, é um clique
+                        if not wasDragging then
+                            -- Reabrir a interface principal
+                            orbFrame:Destroy()
+                            
+                            -- Recriar e mostrar a interface principal
+                            mainFrame.Size = UDim2.new(0, 10, 0, 10)
+                            mainFrame.Position = UDim2.new(0.5, 0, 0.4, 0)
+                            mainFrame.Visible = true
+                            
+                            TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                                Size = UDim2.new(0, 350, 0, 350)
+                            }):Play()
+                        end
+                    end
+                end)
+            end
+        end)
+
+        orbFrame.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                if orbDragToggle then
+                    wasDragging = true
+                    updateOrbInput(input)
+                end
+            end
+        end)
+
+        -- Efeito hover na bolinha
+        orbFrame.MouseEnter:Connect(function()
+            TweenService:Create(orbStroke, TweenInfo.new(0.2), {
+                Color = Color3.fromRGB(150, 200, 255)
+            }):Play()
+            TweenService:Create(orbFrame, TweenInfo.new(0.2), {
+                Size = UDim2.new(0, 65, 0, 65)
+            }):Play()
+        end)
+
+        orbFrame.MouseLeave:Connect(function()
+            TweenService:Create(orbStroke, TweenInfo.new(0.2), {
+                Color = Color3.fromRGB(100, 150, 255)
+            }):Play()
+            TweenService:Create(orbFrame, TweenInfo.new(0.2), {
+                Size = UDim2.new(0, 60, 0, 60)
+            }):Play()
+        end)
+
+        return orbFrame
+    end
+
+    -- Função do botão fechar
+    closeButton.MouseButton1Click:Connect(function()
+        -- Animação de saída da interface principal
+        TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 10, 0, 10)
+        }):Play()
+        
+        task.wait(0.4)
+        mainFrame.Visible = false
+        
+        -- Criar a bolinha minimizada
+        createMinimizedOrb()
+    end)
+
+    -- Feedback visual para área movível
+    local dragHint = Instance.new("TextLabel")
+    dragHint.Size = UDim2.new(1, 0, 0.05, 0)
+    dragHint.Position = UDim2.new(0, 0, 0.05, 0)
+    dragHint.Text = "↕ Drag to move"
+    dragHint.Font = Enum.Font.Gotham
+    dragHint.TextSize = 12
+    dragHint.TextColor3 = Color3.fromRGB(150, 150, 180)
+    dragHint.BackgroundTransparency = 1
+    dragHint.TextXAlignment = Enum.TextXAlignment.Center
+    dragHint.ZIndex = 10
+    dragHint.Parent = mainFrame
+
+    -- Fade out da dica após alguns segundos
+    task.delay(5, function()
+        if dragHint and dragHint.Parent then
+            TweenService:Create(dragHint, TweenInfo.new(1), {
+                TextTransparency = 1
+            }):Play()
+            task.wait(1)
+            if dragHint and dragHint.Parent then
+                dragHint:Destroy()
+            end
+        end
+    end)
+end
+
+-- ========================================
+-- EXECUÇÃO DO SCRIPT PRINCIPAL
+-- ========================================
+
+-- Executar sequência: primeiro loading, depois interface
+print("🚀 Iniciando MKZ Trade Scam Script...")
+print("📱 TikTok: mkz.theplayer")
+print("⏳ Aguarde o carregamento...")
+
+createLoadingScreen()
+task.wait(0.5) -- Pequeno delay para transição suave
+
+print("✅ Loading concluído! Interface iniciando...")
+createTradeScamInterface()
+
+print("🎯 Script carregado com sucesso!")
+print("💡 Dica: Arraste a interface para mover")
+print("❌ Clique no X para minimizar")
+print("⚫ Clique na bolinha para reabrir")
+
+-- ========================================
+-- FIM DO SCRIPT
+-- ========================================
