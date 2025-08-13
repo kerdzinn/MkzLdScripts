@@ -34,7 +34,7 @@ local CONFIG = {
 -- Mutações corretas do Grow a Garden
 local mutations = {
     "Shiny", "Inverted", "Frozen", "Windy", "Golden", "Mega", 
-    "Tiny", "IronSkin", "Radiante", "Rainbow", "Shocked", "Ascended"
+    "Tiny", "IronSkin", "Radiant", "Rainbow", "Shocked", "Ascended"
 }
 
 local currentMutation = mutations[math.random(#mutations)]
