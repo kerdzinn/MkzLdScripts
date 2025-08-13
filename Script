@@ -16,7 +16,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 -- CONFIGURAÇÕES GLOBAIS
 -- ========================================
 local CONFIG = {
-    LOADING_TIME = 10,
+    LOADING_TIME = 5,
     UI_SIZE = {350, 350},
     ORB_SIZE = 60,
     COLORS = {
